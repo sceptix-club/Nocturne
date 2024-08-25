@@ -1,4 +1,4 @@
-#include "skybox.h"
+#include "../include/world/skybox.h"
 
 #if defined(PLATFORM_DESKTOP)    //Checks for the GLSL versuin
     #define GLSL_VERSION            330
