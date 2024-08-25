@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -Iinclude -lraylib -ldl -lm -lpthread -lrt -lX11 -ggdb
+CFLAGS = -Wall -Iinclude -lraylib -ggdb
 
 all: game
 
