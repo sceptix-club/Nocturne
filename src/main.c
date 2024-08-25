@@ -1,8 +1,10 @@
 #include <raylib.h>
 #include <rcamera.h>
 
-#define RLIGHTS_IMPLEMENTATION
+#include "rlgl.h"
+#include "raymath.h" 
 
+#define RLIGHTS_IMPLEMENTATION
 
 #if defined(PLATFORM_DESKTOP)
     #define GLSL_VERSION            330
@@ -11,6 +13,7 @@
 #endif
 
 #include "shaders/lights.h"
+#include "world/skybox.h"
 #include "world/ground.h"
 
 int main(void)
@@ -30,6 +33,8 @@ int main(void)
 
     int cameraMode = CAMERA_FIRST_PERSON;
 
+    //Model ground = Ground();
+    Model skybox = SkyBox(); //Skybox
     // Light above camera
     Shader light = SetLights();
 
@@ -82,6 +87,11 @@ int main(void)
 
                 BeginShaderMode(light);
                 DrawModel(ground, (Vector3){0.0f, 0.0f, 0.0f}, 1.0f, (Color){255, 255, 255, 255});
+                rlDisableBackfaceCulling();
+                rlDisableDepthMask();
+                    DrawModel(skybox, (Vector3){0, 0, 0}, 50.0f, (Color){0,0,0,0});
+                rlEnableBackfaceCulling();
+                rlEnableDepthMask();
 
             EndMode3D();
 
