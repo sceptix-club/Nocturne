@@ -4,7 +4,7 @@
 #include <raylib.h>
 #include <raymath.h>
 
-#include "shaders/rlights.h"
+#include "rlights.h"
 
 Color background_color = (Color){255, 255, 185, 100};
 
