@@ -1,5 +1,8 @@
 #include "raylib.h"
 #include "rcamera.h"
+#include "rlgl.h"
+#include "raymath.h" 
+#include "world/skybox.h"
 
 #define MAX_COLUMNS 20
 
@@ -32,8 +35,8 @@ int main(void)
     //     colors[i] = (Color){ GetRandomValue(20, 255), GetRandomValue(10, 55), 30, 255 };
     // }
 
-    Model ground = Ground();
-
+    //Model ground = Ground();
+    Model skybox = skybox(); //Skybox
     DisableCursor();
     SetTargetFPS(60);
 
@@ -132,6 +135,14 @@ int main(void)
                 DrawCube((Vector3){ -16.0f, 2.5f, 0.0f }, 1.0f, 5.0f, 32.0f, BLUE);     // Draw a blue wall
                 DrawCube((Vector3){ 16.0f, 2.5f, 0.0f }, 1.0f, 5.0f, 32.0f, LIME);      // Draw a green wall
                 DrawCube((Vector3){ 0.0f, 2.5f, 16.0f }, 32.0f, 5.0f, 1.0f, GOLD);      // Draw a yellow wall
+
+                // Draw a Skybox
+                rlDisableBackfaceCulling();
+                rlDisableDepthMask();
+                DrawModel(skybox, (Vector3){0, 0, 0}, 1.0f, WHITE);
+                rlEnableBackfaceCulling();
+                rlEnableDepthMask();
+                
 
                 // Draw some cubes around
                 for (int i = 0; i < MAX_COLUMNS; i++)
