@@ -7,6 +7,6 @@ game: src/main.c
 	$(CC) $(CFLAGS) src/main.c -o $@
 
 clean:
-	rm -f whoami
+	rm -f game
 
 .PHONY: all clean
