@@ -2,7 +2,7 @@
 #include <rcamera.h>
 
 #include "rlgl.h"
-#include "raymath.h" 
+#include "raymath.h"
 
 #define RLIGHTS_IMPLEMENTATION
 
@@ -33,12 +33,13 @@ int main(void)
 
     int cameraMode = CAMERA_FIRST_PERSON;
 
-    //Model ground = Ground();
-    Model skybox = SkyBox(); //Skybox
+    // Model ground = Ground();
+    Model skybox = SkyBox();
+
     // Light above camera
     Shader light = SetLights();
 
-    // This is the 32x32 plane that's below the player
+    // Plane below the player
     Model ground = Ground();
 
     DisableCursor();
@@ -51,7 +52,7 @@ int main(void)
             ToggleFullscreen();
         }
 
-        UpdateCamera(&camera, cameraMode);                
+        UpdateCamera(&camera, cameraMode);
         lightShaderUpdate(camera, light);
 
         BeginDrawing();
