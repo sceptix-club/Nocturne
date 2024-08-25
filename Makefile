@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -Iinclude -lraylib -ggdb
+CFLAGS = -Wall -Iinclude -lraylib -ggdb -DPLATFORM_DESKTOP
 
 all: game
 
