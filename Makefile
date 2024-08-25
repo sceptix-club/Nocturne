@@ -1,12 +1,19 @@
 CC = gcc
 CFLAGS = -Wall -Iinclude -lraylib -ggdb -DPLATFORM_DESKTOP
 
-all: game
+TARGET = game
+SRC = src/main.c include/world/ground.c include/world/skybox.c
+OBJ = $(SRC:.c=.o)
 
-game: src/main.c
-	$(CC) $(CFLAGS) src/main.c -o $@
+all: $(TARGET)
+
+$(TARGET): $(OBJ)
+	$(CC) $(OBJ) $(CFLAGS) -o $(TARGET)
+
+%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	rm -f game
+	rm -f $(TARGET) $(OBJ)
 
 .PHONY: all clean
