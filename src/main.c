@@ -3,6 +3,16 @@
 
 #include "rlgl.h"
 #include "raymath.h" 
+
+#define RLIGHTS_IMPLEMENTATION
+
+#if defined(PLATFORM_DESKTOP)
+    #define GLSL_VERSION            330
+#else   // PLATFORM_ANDROID, PLATFORM_WEB
+    #define GLSL_VERSION            100
+#endif
+
+#include "shaders/lights.h"
 #include "world/skybox.h"
 #include "world/ground.h"
 
@@ -11,7 +21,7 @@ int main(void)
     const int screenWidth = 1600;
     const int screenHeight = 900;
 
-    SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT);
+    SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT | FLAG_MSAA_4X_HINT);
     InitWindow(screenWidth, screenHeight, "ARTEMIS");
 
     Camera camera = {0};
@@ -25,6 +35,9 @@ int main(void)
 
     //Model ground = Ground();
     Model skybox = SkyBox(); //Skybox
+    // Light above camera
+    Shader light = SetLights();
+
     // This is the 32x32 plane that's below the player
     Model ground = Ground();
 
@@ -46,6 +59,7 @@ int main(void)
         // Some default standard keyboard/mouse inputs are hardcoded to simplify use
         // For advance camera controls, it's reecommended to compute camera movement manually
         UpdateCamera(&camera, cameraMode);                  // Update camera
+        lightShaderUpdate(camera, light);
 
 /*
         // Camera PRO usage example (EXPERIMENTAL)
@@ -71,6 +85,7 @@ int main(void)
             ClearBackground(BLACK);
             BeginMode3D(camera);
 
+                BeginShaderMode(light);
                 DrawModel(ground, (Vector3){0.0f, 0.0f, 0.0f}, 1.0f, (Color){255, 255, 255, 255});
                 rlDisableBackfaceCulling();
                 rlDisableDepthMask();
