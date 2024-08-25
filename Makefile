@@ -2,7 +2,7 @@ CC = gcc
 CFLAGS = -Wall -Iinclude -lraylib -ggdb -DPLATFORM_DESKTOP
 
 TARGET = game
-SRC = src/main.c src/ground.c src/skybox.c
+SRC = $(wildcard src/*.c)
 BUILD = build
 OBJ = $(SRC:%.c=$(BUILD)/%.o)
 
