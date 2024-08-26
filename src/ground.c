@@ -85,7 +85,7 @@ void UpdateGroundFromCameraPosition(Vector3 cameraPosition) {
 
 // this function is called in the drawing loop in main.c
 Model Ground(Vector3 cameraPosition, Vector3 *prevCameraPosition) {
-    if (!Vector3Equals(cameraPosition, *prevCameraPosition)) {
+    if (!Vector3Equals(cameraPosition, *prevCameraPosition)) { // not even sure if this is needed
         UpdateGroundFromCameraPosition(cameraPosition);
         *prevCameraPosition = cameraPosition;
     }

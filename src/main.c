@@ -68,7 +68,7 @@ int main(void)
         lightShaderUpdate(camera, light);
 
         // Plane below the player
-        Model groundModel = Ground(camera.position, &prevCameraPosition);
+        Model groundModel __attribute__((unused)) = Ground(camera.position, &prevCameraPosition);
 
         BeginDrawing();
             ClearBackground(BLACK);
