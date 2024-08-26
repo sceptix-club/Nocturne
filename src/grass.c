@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <raymath.h>
 #define NUM_GRASS_BLADES 8000
-#define PATCH_SIZE 32.0f
+#define PATCH_SIZE 50.0f
 
 typedef struct
 {
@@ -27,7 +27,7 @@ Model GrassBlade(Shader lightShader)
     grass.materials[0].shader = lightShader;
     return grass;
 }
-void InitGrass(Vector3 playerPos, Shader lightShader)
+void InitGrass(Vector3 playerPos)
 {
     srand(time(NULL)); // Seed for random number generation
     // Initialize grass blades with random positions and scales
