@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS =  -Wall -Iinclude -lraylib -ggdb -DPLATFORM_DESKTOP 
+CFLAGS =  -Wall -Iinclude -lraylib -ggdb -DPLATFORM_DESKTOP -lm
 
 TARGET = game
 SRC = $(wildcard src/*.c)
