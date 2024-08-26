@@ -27,8 +27,8 @@ int main(void)
     InitWindow(screenWidth, screenHeight, "ARTEMIS");
 
     Camera camera = {0};
-    camera.position = (Vector3){ -15.0f, 10.0f, 2.0f };
-    camera.target = (Vector3){ 0.185f, 1.5f, -1.0f };
+    camera.position = (Vector3){ 0.0f, 2.0f, 0.0f };
+    camera.target = (Vector3){ 0.185f, 1.0f, -1.0f };
     camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };
     camera.fovy = 60.0f;
     camera.projection = CAMERA_PERSPECTIVE;
@@ -82,9 +82,10 @@ int main(void)
                 rlEnableDepthMask();
 
                 //Draw Grass
-                DrawGrassNew(grass);
+                // DrawGrassNew(grass);
 
                 rlEnableBackfaceCulling();
+                
                 
                 for (int i = 0; i < alivePlanesCount; i++) {
                     DrawModel(alivePlanes[i].model, alivePlanes[i].position, 1.0f, WHITE);
@@ -99,7 +100,7 @@ int main(void)
 
         EndDrawing();
     }
-    UnloadModel(grass);
+    // UnloadModel(grass);
 
     // Unload Ground
     for (int i = 0; i < alivePlanesCount; i++) {
