@@ -27,10 +27,10 @@ int main(void)
     InitWindow(screenWidth, screenHeight, "ARTEMIS");
 
     Camera camera = {0};
-    camera.position = (Vector3){ 0.0f, 2.0f, 0.0f };
+    camera.position = (Vector3){ 0.0f, 4.5f, 0.0f };
     camera.target = (Vector3){ 0.185f, 1.0f, -1.0f };
     camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };
-    camera.fovy = 60.0f;
+    camera.fovy = 85.0f;
     camera.projection = CAMERA_PERSPECTIVE;
 
     int cameraMode = CAMERA_FIRST_PERSON;
@@ -42,13 +42,14 @@ int main(void)
     Shader light = SetLights();
 
     // display cam position
-    char cameraPosition[100];
-    Vector3 prevCameraPosition = {0.0f, 0.0f, 0.0f};
+    Model ground = Ground(light);
 
     //grass model
     Model grass = GrassBlade(light);
     //Initialize grass
-    InitGrass(camera.target,light);
+    InitGrass(camera.target);
+    //Initialize Ground
+    InitGround(camera.target);
 
     DisableCursor();
     SetTargetFPS(60);
@@ -65,11 +66,10 @@ int main(void)
         UpdateCamera(&camera, cameraMode);
         //Updating grass patch
         UpdateGrassPatches(camera.target);
+
         lightShaderUpdate(camera, light);
-
-        // Plane below the player
-        Model groundModel __attribute__((unused)) = Ground(camera.position, &prevCameraPosition);
-
+        //Updating Ground
+        UpdateGroundPatches(camera.target);
         BeginDrawing();
             ClearBackground(BLACK);
             BeginMode3D(camera);
@@ -83,30 +83,17 @@ int main(void)
 
                 //Draw Grass
                 DrawGrassNew(grass);
-
                 rlEnableBackfaceCulling();
-                
-                
-                for (int i = 0; i < alivePlanesCount; i++) {
-                    DrawModel(alivePlanes[i].model, alivePlanes[i].position, 1.0f, WHITE);
-                }
-
+                //Draw Ground with backface culling
+                DrawGround(ground);
             EndMode3D();
-        DrawFPS(5,5);
 
-        // Below prints camera position
-        sprintf(cameraPosition, "cam-pos: (%.2f, %.2f, %.2f)", camera.position.x, camera.position.y, camera.position.z);
-        DrawText(cameraPosition, 100, 5, 20, WHITE );
 
         EndDrawing();
     }
     UnloadModel(grass);
 
-    // Unload Ground
-    for (int i = 0; i < alivePlanesCount; i++) {
-        UnloadModel(alivePlanes[i].model);
-    }
-
+    UnloadModel(ground);
     UnloadModel(skybox);
     UnloadShader(skybox.materials[0].shader);
     UnloadTexture(skybox.materials[0].maps[MATERIAL_MAP_CUBEMAP].texture);
