@@ -16,6 +16,7 @@
 #include "world/skybox.h"
 #include "world/ground.h"
 #include "world/grass.h"
+#include "stdio.h"
 
 int main(void)
 {
@@ -26,7 +27,7 @@ int main(void)
     InitWindow(screenWidth, screenHeight, "ARTEMIS");
 
     Camera camera = {0};
-    camera.position = (Vector3){ -15.0f, 2.0f, 2.0f };
+    camera.position = (Vector3){ -15.0f, 10.0f, 2.0f };
     camera.target = (Vector3){ 0.185f, 1.5f, -1.0f };
     camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };
     camera.fovy = 60.0f;
@@ -40,8 +41,9 @@ int main(void)
     // Light above camera
     Shader light = SetLights();
 
-    // Plane below the player
-    Model ground = Ground();
+
+    // display cam position
+    char cameraPosition[100];
 
     //grass model
     Model grass = GrassBlade(light);
@@ -50,6 +52,8 @@ int main(void)
 
     DisableCursor();
     SetTargetFPS(60);
+
+    // --------------------------------------------------------------------------------------
 
     while (!WindowShouldClose()) 
     {
@@ -62,6 +66,9 @@ int main(void)
         //Updating grass patch
         UpdateGrassPatches(camera.target);
         lightShaderUpdate(camera, light);
+
+        // Plane below the player
+        Ground(camera.position);
 
         BeginDrawing();
             ClearBackground(BLACK);
@@ -78,18 +85,30 @@ int main(void)
                 DrawGrassNew(grass);
 
                 rlEnableBackfaceCulling();
-                DrawModel(ground, (Vector3){0.0f, 0.0f, 0.0f}, 1.0f, (Color){255, 255, 255, 255});
+                
+                for (int i = 0; i < alivePlanesCount; i++) {
+                    DrawModel(alivePlanes[i].model, alivePlanes[i].position, 1.0f, WHITE);
+                }
 
             EndMode3D();
         DrawFPS(5,5);
 
+        // Below prints camera position
+        sprintf(cameraPosition, "cam-pos: (%.2f, %.2f, %.2f)", camera.position.x, camera.position.y, camera.position.z);
+        DrawText(cameraPosition, 100, 5, 20, WHITE );
+
         EndDrawing();
     }
     UnloadModel(grass);
+
+    // Unload Ground
+    for (int i = 0; i < alivePlanesCount; i++) {
+        UnloadModel(alivePlanes[i].model);
+    }
+
     UnloadModel(skybox);
     UnloadShader(skybox.materials[0].shader);
     UnloadTexture(skybox.materials[0].maps[MATERIAL_MAP_CUBEMAP].texture);
-
 
     CloseWindow();
 
