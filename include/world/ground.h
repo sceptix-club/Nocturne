@@ -6,7 +6,7 @@
 #include <stdio.h>
 
 #define GROUND_SIZE 10.0f
-#define CAMERA_EDGE_OFFSET 5.0f
+#define CAMERA_EDGE_OFFSET 6.0f
 
 typedef struct ProceduralGround
 {
@@ -14,10 +14,11 @@ typedef struct ProceduralGround
     Vector3 position;
 } ProceduralGround;
 
-extern ProceduralGround alivePlanes[6];
+extern ProceduralGround alivePlanes[9];
 extern int alivePlanesCount;
 
 // function to add ground procedurally
 Model Ground(Vector3 cameraPosition);
+void UpdateGroundFromCameraPosition(Vector3 cameraPosition);
 
 #endif // GROUND_H
