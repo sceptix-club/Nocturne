@@ -1,12 +1,12 @@
 CC = gcc
-CFLAGS = -Wall -Iinclude -lraylib -ggdb -DPLATFORM_DESKTOP
+CFLAGS =  -Wall -Iinclude -lraylib -ggdb -DPLATFORM_DESKTOP 
 
 all: game
 
-game: src/main.c
-	$(CC) $(CFLAGS) src/main.c -o $@
+game:
+		$(CC) src/main.c -o $@ $(CFLAGS)
 
 clean:
-	rm -f game
+		rm -f game
 
 .PHONY: all clean
