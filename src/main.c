@@ -15,6 +15,7 @@
 #include "shaders/lights.h"
 #include "world/skybox.h"
 #include "world/ground.h"
+#include "world/grass.h"
 
 int main(void)
 {
@@ -42,6 +43,11 @@ int main(void)
     // Plane below the player
     Model ground = Ground();
 
+    //grass model
+    Model grass = GrassBlade(light);
+    //Initialize grass
+    InitGrass(camera.target,light);
+
     DisableCursor();
     SetTargetFPS(60);
 
@@ -53,6 +59,8 @@ int main(void)
         }
 
         UpdateCamera(&camera, cameraMode);
+        //Updating grass patch
+        UpdateGrassPatches(camera.target);
         lightShaderUpdate(camera, light);
 
         BeginDrawing();
@@ -66,6 +74,9 @@ int main(void)
                    DrawModel(skybox, (Vector3){0,0,0},20.0f,BLACK);
                 rlEnableDepthMask();
 
+                //Draw Grass
+                DrawGrassNew(grass);
+
                 rlEnableBackfaceCulling();
                 DrawModel(ground, (Vector3){0.0f, 0.0f, 0.0f}, 1.0f, (Color){255, 255, 255, 255});
 
@@ -74,6 +85,7 @@ int main(void)
 
         EndDrawing();
     }
+    UnloadModel(grass);
     UnloadModel(skybox);
     UnloadShader(skybox.materials[0].shader);
     UnloadTexture(skybox.materials[0].maps[MATERIAL_MAP_CUBEMAP].texture);
