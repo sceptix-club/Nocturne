@@ -13,7 +13,6 @@ void AddGround(Vector3 groundPosition) {
         alivePlanes[alivePlanesCount].model = ground;
         alivePlanes[alivePlanesCount].position = groundPosition;
         alivePlanesCount++;
-    printf("Added ground at position: (%.2f, %.2f, %.2f)\n", groundPosition.x, groundPosition.y, groundPosition.z);
     }
 }
 
@@ -32,51 +31,64 @@ void RemoveGround(int groundIndex) {
 
 // this updates the ground planes based on the camera position
 void UpdateGroundFromCameraPosition(Vector3 cameraPosition) {
-        /*
-        this thing below calculates the ground position based on the camera position as a grid
-        explanation:
-        1. newGroundPosition is set to the camera position with y set to 0 (ground height)
-        2. newGroundPosition.x is divided by GROUND_SIZE and then floored to get the grid position
-        3. newGroundPosition.x is then multiplied by GROUND_SIZE to get the actual position of the grid 
+    /*
+    this thing below calculates the ground position based on the camera position as a grid
+    explanation:
+    1. newGroundPosition is set to the camera position with y set to 0 (ground height)
+    2. newGroundPosition.x is divided by GROUND_SIZE and then floored to get the grid position
+    3. newGroundPosition.x is then multiplied by GROUND_SIZE to get the actual position of the grid 
     */
     Vector3 curCameraPosition = {cameraPosition.x, 0.0f, cameraPosition.z};
     curCameraPosition.x = (int)(curCameraPosition.x / GROUND_SIZE) * GROUND_SIZE;
     curCameraPosition.z = (int)(curCameraPosition.z / GROUND_SIZE) * GROUND_SIZE;
 
-    for (int groundIndex = 0; groundIndex < alivePlanesCount; groundIndex++) {
-        Vector3 groundPosition = alivePlanes[groundIndex].position;
-
-        if(Vector3Distance(cameraPosition, groundPosition) > CAMERA_EDGE_OFFSET) {
-            RemoveGround(groundIndex);
-            groundIndex--;
-        }
-    }
+    // create a check for the 3x3 grid of ground planes
+    Vector3 newGroundPositions[9];
+    int newGroundCount = 0;
 
     // this loop creates a 3x3 grid of ground planes around the camera
-    // it might seem inefficient but good for now ig :(
     for (float x = curCameraPosition.x - GROUND_SIZE; x <= curCameraPosition.x + GROUND_SIZE; x += GROUND_SIZE) {
         for (float z = curCameraPosition.z - GROUND_SIZE; z <= curCameraPosition.z + GROUND_SIZE; z += GROUND_SIZE) {
             Vector3 newGroundPosition = {x, 0.0f, z};
+            newGroundPositions[newGroundCount++] = newGroundPosition;
+        }
+    }
 
-            // checks if the ground is already exists at the new position
-            int groundExists = 0;
-            for (int i = 0; i < alivePlanesCount; i++) {
-                if (Vector3Distance(newGroundPosition, alivePlanes[i].position) < GROUND_SIZE / 2) {
-                    groundExists = 1;
-                    break;
-                }
+    // if the ground plane is not in the 3x3 grid, remove it
+    for (int groundIndex = 0; groundIndex < alivePlanesCount; groundIndex++) {
+        int groundExists = 0;
+        for (int i = 0; i < newGroundCount; i++) {
+            if (Vector3Distance(alivePlanes[groundIndex].position, newGroundPositions[i]) < GROUND_SIZE / 2) {
+                groundExists = 1;
+                break;
             }
+        }
+        if (!groundExists) {
+            RemoveGround(groundIndex--);
+        }
+    }
 
-            if (!groundExists) {
-                AddGround(newGroundPosition);
+    // finally, if the ground plane is not in the alivePlanes array, add it
+    for (int i = 0; i < newGroundCount; i++) {
+        int groundExists = 0;
+        for (int groundIndex = 0; groundIndex < alivePlanesCount; groundIndex++) {
+            if (Vector3Distance(newGroundPositions[i], alivePlanes[groundIndex].position) < GROUND_SIZE / 2) {
+                groundExists = 1;
+                break;
             }
+        }
+        if (!groundExists) {
+            AddGround(newGroundPositions[i]);
         }
     }
 }
 
 // this function is called in the drawing loop in main.c
-Model Ground(Vector3 cameraPosition){
-    UpdateGroundFromCameraPosition(cameraPosition);
+Model Ground(Vector3 cameraPosition, Vector3 *prevCameraPosition) {
+    if (!Vector3Equals(cameraPosition, *prevCameraPosition)) {
+        UpdateGroundFromCameraPosition(cameraPosition);
+        *prevCameraPosition = cameraPosition;
+    }
 
     if (alivePlanesCount > 0) {
         return alivePlanes[0].model;

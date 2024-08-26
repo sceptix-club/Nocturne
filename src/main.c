@@ -41,9 +41,9 @@ int main(void)
     // Light above camera
     Shader light = SetLights();
 
-
     // display cam position
     char cameraPosition[100];
+    Vector3 prevCameraPosition = {0.0f, 0.0f, 0.0f};
 
     //grass model
     Model grass = GrassBlade(light);
@@ -68,7 +68,7 @@ int main(void)
         lightShaderUpdate(camera, light);
 
         // Plane below the player
-        Ground(camera.position);
+        Model groundModel = Ground(camera.position, &prevCameraPosition);
 
         BeginDrawing();
             ClearBackground(BLACK);
@@ -82,7 +82,7 @@ int main(void)
                 rlEnableDepthMask();
 
                 //Draw Grass
-                // DrawGrassNew(grass);
+                DrawGrassNew(grass);
 
                 rlEnableBackfaceCulling();
                 
@@ -100,7 +100,7 @@ int main(void)
 
         EndDrawing();
     }
-    // UnloadModel(grass);
+    UnloadModel(grass);
 
     // Unload Ground
     for (int i = 0; i < alivePlanesCount; i++) {
