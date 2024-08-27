@@ -1,33 +1,55 @@
 #include "../include/world/firefly.h"
 
-#define FIREFLY_COUNT 100
-#define MAX_RANGE 50.0f
+#define FIREFLY_COUNT 50
+#define FIREFLY_RADIUS 0.07f
+#define MAX_OFFSET 30.0f
+#define MAX_HEIGHT 15.0f
 
 typedef struct Firefly {
     Vector3 position;
-} Firefly;
+} firefly;
 
-Firefly fireflies[FIREFLY_COUNT];
+firefly fireflies[FIREFLY_COUNT];
+
+Model Firefly() {
+    Mesh sphere = GenMeshSphere(FIREFLY_RADIUS, 8, 8);
+    Model firefly = LoadModelFromMesh(sphere);
+    
+    return firefly;
+}
 
 void InitFireflies(Vector3 cameraPosition) {
     srand(time(NULL));
 
-    for (int i = 0; i < FIREFLY_COUNT; i++) {
-        float fireflyX = cameraPosition.x + (float)(rand() % (int)(MAX_RANGE * 2)) - MAX_RANGE;
-        float fireflyY = 0 + (float)(rand() % (int)(MAX_RANGE - 0 + 1));
-        float fireflyZ = cameraPosition.z + (float)(rand() % (int)(MAX_RANGE * 2)) - MAX_RANGE;
+    for (int i = 0; i < FIREFLY_COUNT; i++) { // Initialize fireflies with random positions around the camera
+        float fireflyX = cameraPosition.x + (float)(rand() % (int)(MAX_OFFSET * 2)) - MAX_OFFSET;
+        float fireflyY = 0 + (float)(rand() % (int)(MAX_HEIGHT - 0 + 1));
+        float fireflyZ = cameraPosition.z + (float)(rand() % (int)(MAX_OFFSET * 2)) - MAX_OFFSET;
 
-        fireflies[i].position = (Vector3){fireflyX, fireflyY, fireflyZ};
+        fireflies[i].position = (Vector3){fireflyX, fireflyY, fireflyZ}; 
     }
 }
 
-void RandomFirefliesMovement(){
+void UpdateFireflies(Vector3 cameraPosition) {
     for (int i = 0; i < FIREFLY_COUNT; i++) {
-        float newFireflyX = fireflies[i].position.x + (float)(rand() % 3) - 1;
-        float newFireflyY = fireflies[i].position.y + (float)(rand() % 3) - 1;
-        float newFireflyZ = fireflies[i].position.z + (float)(rand() % 3) - 1;
+        if (fireflies[i].position.x > cameraPosition.x + MAX_OFFSET) {
+            fireflies[i].position.x = cameraPosition.x - MAX_OFFSET;
+        } else if (fireflies[i].position.x < cameraPosition.x - MAX_OFFSET) {
+            fireflies[i].position.x = cameraPosition.x + MAX_OFFSET;
+        }
 
-        fireflies[i].position = (Vector3){newFireflyX, newFireflyY, newFireflyZ};
+        if (fireflies[i].position.z > cameraPosition.z + MAX_OFFSET) {
+            fireflies[i].position.z = cameraPosition.z - MAX_OFFSET;
+        } else if (fireflies[i].position.z < cameraPosition.z - MAX_OFFSET) {
+            fireflies[i].position.z = cameraPosition.z + MAX_OFFSET;
+        }
     }
 }
 
+void DrawFireflies(Model firefly, Vector3 cameraPosition) {
+    UpdateFireflies(cameraPosition);
+
+    for (int i = 0; i < FIREFLY_COUNT; i++) {
+        DrawModel(firefly, fireflies[i].position, 1.0f, YELLOW);
+    }
+}

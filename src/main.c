@@ -16,6 +16,7 @@
 #include "world/skybox.h"
 #include "world/ground.h"
 #include "world/grass.h"
+#include "world/firefly.h"
 #include "stdio.h"
 
 int main(void)
@@ -44,12 +45,20 @@ int main(void)
     // display cam position
     Model ground = Ground(light);
 
-    //grass model
+    //  grass model
     Model grass = GrassBlade(light);
+
+    // firefly model
+    Model firefly = Firefly();
+
     //Initialize grass
     InitGrass(camera.target);
+
     //Initialize Ground
     InitGround(camera.target);
+
+    //Initialize Fireflies
+    InitFireflies(camera.target);
 
     DisableCursor();
     SetTargetFPS(60);
@@ -82,16 +91,20 @@ int main(void)
                 rlEnableDepthMask();
 
                 //Draw Grass
-                DrawGrassNew(grass);
+                // DrawGrassNew(grass);
                 rlEnableBackfaceCulling();
                 //Draw Ground with backface culling
                 DrawGround(ground);
+
+                //Draw Fireflies
+                DrawFireflies(firefly, camera.target);
+
             EndMode3D();
 
 
         EndDrawing();
     }
-    UnloadModel(grass);
+    // UnloadModel(grass);
 
     UnloadModel(ground);
     UnloadModel(skybox);
