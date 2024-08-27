@@ -76,6 +76,6 @@ void DrawGrassNew(Model grass)
     float bendFactor = sinf(time_init * 2.0f) * 3.0f * DEG2RAD;
     for (int i = 0; i < NUM_GRASS_BLADES; i++)
     {
-        DrawModelEx(grass, grassBlades[i].position, (Vector3){1.0f, 0.0f, 0.0f}, (grassBlades[i].rotation * bendFactor), (Vector3){grassBlades[i].scale, grassBlades[i].scale, grassBlades[i].scale}, DARKGRAY);
+        DrawModelEx(grass, grassBlades[i].position, (Vector3){1.0f, 0.0f, 0.0f}, (grassBlades[i].rotation * bendFactor), (Vector3){grassBlades[i].scale, grassBlades[i].scale, grassBlades[i].scale}, BLACK);
     }
 }
