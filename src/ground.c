@@ -64,6 +64,6 @@ void DrawGround(Model ground)
 {
     for(int i=0; i<MAX_GROUNDS; i++)
     {
-        DrawModel(ground,grounds[i].position, 1.0f,WHITE);
+        DrawModel(ground,grounds[i].position, 1.0f,BLACK);
     }
 }
