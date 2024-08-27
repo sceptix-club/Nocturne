@@ -5,7 +5,7 @@
 #define MAX_OFFSET 30.0f // Maximum distance from the camera
 #define MAX_HEIGHT 15.0f // Maximum height of the firefly
 #define STEP_SIZE 0.002f // Step size for Brownian motion (smaller value = smoother motion)
-#define BROWNIAN_VARIANCE 0.001f // Variance for Brownian motion (smaller value = slower speed)
+#define BROWNIAN_VARIANCE 0.003f // Variance for Brownian motion (smaller value = slower speed)
 #define BOUNCE_DAMPING 0.03f // Damping factor for bouncing off the ground and ceiling
 
 typedef struct Firefly {
@@ -23,18 +23,10 @@ Model Firefly() {
 }
 
 // Helper function to apply Brownian motion
-void BrownianMotionFirefly(firefly *f) {
-    // Update position based on velocity
-    f->position.x += f->velocity.x;
-    f->position.y += f->velocity.y;
-    f->position.z += f->velocity.z;
-
-    // Apply random changes to velocity for Brownian motion
-    f->velocity.x += ((float)rand() / RAND_MAX - 0.5f) * BROWNIAN_VARIANCE;
-    f->velocity.y += ((float)rand() / RAND_MAX - 0.5f) * BROWNIAN_VARIANCE;
-    f->velocity.z += ((float)rand() / RAND_MAX - 0.5f) * BROWNIAN_VARIANCE;
+static inline void BrownianMotionFirefly(firefly *f) {
+    f->position = Vector3Add(f->position, f->velocity);
+    f->velocity =Vector3AddValue(f->velocity, ((float)rand() / RAND_MAX - 0.5f) * BROWNIAN_VARIANCE); // small brownian motion added to velocity
 }
-
 
 // Helper function to wrap firefly position around the camera
 static inline void WrapFireflyPosition(float *position, float min, float max) {
@@ -48,13 +40,14 @@ static inline void WrapFireflyPosition(float *position, float min, float max) {
 // Initialize fireflies with random positions and velocities
 void InitFireflies(Vector3 cameraPosition) {
     srand(time(NULL));
-    
+
     for (int i = 0; i < FIREFLY_COUNT; i++) { 
         float fireflyX = cameraPosition.x + (float)(rand() % (int)(MAX_OFFSET * 2)) - MAX_OFFSET;
         float fireflyY = 2 + (float)(rand() % (int)(MAX_HEIGHT - 2 + 1));
         float fireflyZ = cameraPosition.z + (float)(rand() % (int)(MAX_OFFSET * 2)) - MAX_OFFSET;
 
         fireflies[i].position = (Vector3){fireflyX, fireflyY, fireflyZ};
+        fireflies[i].velocity = (Vector3){0.0f, 0.0f, 0.0f};
     }
 }
 
