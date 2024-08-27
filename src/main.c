@@ -1,14 +1,8 @@
-#include <rlgl.h>
-#include <stdio.h>
 #include <raylib.h>
-#include <raymath.h>
 #include <rcamera.h>
 
-#include "shaders/lights.h"
-#include "world/skybox.h"
-#include "world/ground.h"
-#include "world/grass.h"
-#include "world/firefly.h"
+#include "rlgl.h"
+#include "raymath.h"
 
 #define RLIGHTS_IMPLEMENTATION
 
@@ -17,6 +11,14 @@
 #else   // PLATFORM_ANDROID, PLATFORM_WEB
     #define GLSL_VERSION            100
 #endif
+
+#include "shaders/lights.h"
+#include "world/skybox.h"
+#include "world/ground.h"
+#include "world/grass.h"
+#include "world/firefly.h"
+#include "stdio.h"
+
 int main(void)
 {
     const int screenWidth = 1600;
