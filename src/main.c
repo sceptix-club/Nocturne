@@ -91,7 +91,7 @@ int main(void)
                 rlEnableDepthMask();
 
                 //Draw Grass
-                // DrawGrassNew(grass);
+                DrawGrassNew(grass);
                 rlEnableBackfaceCulling();
                 //Draw Ground with backface culling
                 DrawGround(ground);
