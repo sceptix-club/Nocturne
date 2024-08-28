@@ -21,13 +21,17 @@
 #include "world/rain.h"
 #include "stdio.h"
 
+typedef enum GameScreen { LOGO = 0, TITLE, GAMEPLAY} GameScreen;
+
 int main(void)
 {
     const int screenWidth = 1600;
     const int screenHeight = 900;
+    GameScreen currentScreen = LOGO;
 
     SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT | FLAG_MSAA_4X_HINT);
     InitWindow(screenWidth, screenHeight, "ARTEMIS");
+    int framesCounter = 0;
 
     Camera camera = {0};
     camera.position = (Vector3){ 0.0f, 4.5f, 0.0f };
@@ -76,6 +80,40 @@ int main(void)
 
     while (!WindowShouldClose()) 
     {
+        switch(currentScreen)
+        {
+            case LOGO:
+            {
+                // TODO: Update LOGO screen variables here!
+
+                framesCounter++;    // Count frames
+
+                // Wait for 2 seconds (120 frames) before jumping to TITLE screen
+                if (framesCounter > 120)
+                {
+                    currentScreen = TITLE;
+                }
+            } break;
+            case TITLE:
+            {
+                // TODO: Update TITLE screen variables here!
+
+                // Press enter to change to GAMEPLAY screen
+                if (IsKeyPressed(KEY_ENTER) || IsGestureDetected(GESTURE_TAP))
+                {
+                    currentScreen = GAMEPLAY;
+                }
+            } break;
+            case GAMEPLAY:
+            {
+                // TODO: Update GAMEPLAY screen variables here!
+
+                // Press enter to change to ENDING screen
+            } break;
+            default: break;
+        }
+
+
         if (IsKeyPressed(KEY_F))
         {
             ToggleFullscreen();
@@ -116,7 +154,27 @@ int main(void)
         UpdateGroundPatches(camera.target);
         BeginDrawing();
             ClearBackground(BLACK);
-            BeginMode3D(camera);
+            switch(currentScreen)
+            {
+                case LOGO:
+                {
+                    // TODO: Draw LOGO screen here!
+                    DrawText("LOGO SCREEN", 20, 20, 40, LIGHTGRAY);
+                    DrawText("WAIT for 2 SECONDS...", 290, 220, 20, GRAY);
+
+                } break;
+                case TITLE:
+                {
+                    // TODO: Draw TITLE screen here!
+                    DrawRectangle(0, 0, screenWidth, screenHeight, GREEN);
+                    DrawText("TITLE SCREEN", 20, 20, 40, DARKGREEN);
+                    DrawText("PRESS ENTER to GAMEPLAY SCREEN", 120, 220, 20, DARKGREEN);
+
+                } break;
+                case GAMEPLAY:
+                {
+                    // TODO: Draw GAMEPLAY screen here!
+                    BeginMode3D(camera);
 
                 BeginShaderMode(light);
                 rlDisableBackfaceCulling();
@@ -140,9 +198,12 @@ int main(void)
                 DrawFireflies(firefly, camera.target);
 
             EndMode3D();
+
+                } break;
+                default: break;
+            }
         EndDrawing();
     }
-
     UnloadModel(grass);
     UnloadModel(ground);
     UnloadModel(firefly);
