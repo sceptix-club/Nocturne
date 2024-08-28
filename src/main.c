@@ -142,13 +142,14 @@ int main(void)
             EndMode3D();
         EndDrawing();
     }
-    UnloadModel(skybox);
+
     UnloadModel(grass);
     UnloadModel(ground);
     UnloadModel(firefly);
     UnloadModel(rain);
     UnloadShader(skybox.materials[0].shader);
     UnloadTexture(skybox.materials[0].maps[MATERIAL_MAP_CUBEMAP].texture);
+    UnloadModel(skybox);
 
     CloseWindow();
 
