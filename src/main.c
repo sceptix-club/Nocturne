@@ -1,5 +1,6 @@
 #include <raylib.h>
 #include <rcamera.h>
+#include <stdio.h>
 
 #include "rlgl.h"
 #include "raymath.h"
@@ -17,6 +18,7 @@
 #include "world/ground.h"
 #include "world/grass.h"
 #include "world/firefly.h"
+#include "world/rain.h"
 #include "stdio.h"
 
 int main(void)
@@ -49,6 +51,9 @@ int main(void)
     // firefly model
     Model firefly = Firefly();
 
+    // rain model
+    Model rain = Rain();
+
     //Initialize grass
     InitGrass(camera.target);
 
@@ -58,8 +63,14 @@ int main(void)
     //Initialize Fireflies
     InitFireflies(camera.target);
 
+    //Initialize Rain
+    InitRain(camera.target);
+
     DisableCursor();
     SetTargetFPS(60);
+
+    bool toggleRain = false;
+    bool previousRain = false;
 
     // --------------------------------------------------------------------------------------
 
@@ -69,6 +80,17 @@ int main(void)
         {
             ToggleFullscreen();
         }
+
+        if (IsKeyPressed(KEY_R)) {
+            toggleRain = !toggleRain;
+        }
+
+        // Toggle rain logic to reset rain drops
+        if (!toggleRain && previousRain) {
+            ResetActiveRainDrops();
+        }
+        previousRain = toggleRain;
+        // =====================================
 
         UpdateCameraPro(&camera,
         (Vector3){
@@ -84,7 +106,7 @@ int main(void)
             GetMouseDelta().y*0.08f,                            // Rotation: pitch
             0.0f                                                // Rotation: roll
         },
-        0.0f);                              // Move to target (zoom)
+        0.0f);                         // Move to target (zoom)
 
         //Updating grass patch
         UpdateGrassPatches(camera.target);
@@ -104,8 +126,13 @@ int main(void)
                 rlEnableDepthMask();
 
                 //Draw Grass
-                DrawGrassNew(grass);
-                rlEnableBackfaceCulling();
+                //DrawGrassNew(grass);
+
+                //Draw Rain
+                if (toggleRain) DrawRain(rain, camera.target);
+                else ResetActiveRainDrops();
+                
+                rlEnableBackfaceCulling();     
                 //Draw Ground with backface culling
                 DrawGround(ground);
 
@@ -113,14 +140,13 @@ int main(void)
                 DrawFireflies(firefly, camera.target);
 
             EndMode3D();
-
-
         EndDrawing();
     }
-    UnloadModel(grass);
-
-    UnloadModel(ground);
     UnloadModel(skybox);
+    UnloadModel(grass);
+    UnloadModel(ground);
+    UnloadModel(firefly);
+    UnloadModel(rain);
     UnloadShader(skybox.materials[0].shader);
     UnloadTexture(skybox.materials[0].maps[MATERIAL_MAP_CUBEMAP].texture);
 
