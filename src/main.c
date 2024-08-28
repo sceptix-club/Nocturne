@@ -70,7 +70,6 @@ int main(void)
     SetTargetFPS(60);
 
     bool toggleRain = false;
-    int rainCount = 100;
 
     // --------------------------------------------------------------------------------------
 
@@ -99,19 +98,19 @@ int main(void)
             GetMouseDelta().y*0.08f,                            // Rotation: pitch
             0.0f                                                // Rotation: roll
         },
-        0.0f);                              // Move to target (zoom)
+        0.0f);                         // Move to target (zoom)
 
         //Updating grass patch
         UpdateGrassPatches(camera.target);
 
-        //lightShaderUpdate(camera, light);
+        lightShaderUpdate(camera, light);
         //Updating Ground
         UpdateGroundPatches(camera.target);
         BeginDrawing();
             ClearBackground(BLACK);
             BeginMode3D(camera);
 
-                //BeginShaderMode(light);
+                BeginShaderMode(light);
                 rlDisableBackfaceCulling();
 
                 rlDisableDepthMask();
@@ -122,7 +121,7 @@ int main(void)
                 //DrawGrassNew(grass);
 
                 //Draw Rain
-                if (toggleRain) DrawRain(rain, camera.target, rainCount);
+                if (toggleRain) DrawRain(rain, camera.target);
                 
                 rlEnableBackfaceCulling();     
                 //Draw Ground with backface culling

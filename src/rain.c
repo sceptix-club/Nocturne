@@ -1,11 +1,8 @@
 #include "../include/world/rain.h"
 
-// rain 
-
 #define RAINDROP_COUNT 1000
 #define RAINDROP_SCALE (Vector3){1.0f, 1.0f, 1.0f}
 #define MAX_OFFSET 30.0f
-
 
 typedef struct RainDrop {
     Vector3 position;
@@ -39,13 +36,13 @@ void InitRain(Vector3 cameraPosition) {
 }
  
 // Update rain drops position and wrap around the camera
-void UpdateRain(Vector3 cameraPosition, int rainCount) {
+void UpdateRain(Vector3 cameraPosition, int activeRain) {
     float maxX = cameraPosition.x + MAX_OFFSET;
     float minX = cameraPosition.x - MAX_OFFSET;
     float maxZ = cameraPosition.z + MAX_OFFSET;
     float minZ = cameraPosition.z - MAX_OFFSET;
 
-    for (int i = 0; i < RAINDROP_COUNT; i++) {
+    for (int i = 0; i < activeRain; i++) {
         WrapRainPosition(&rainDrops[i].position.x, minX, maxX);
         WrapRainPosition(&rainDrops[i].position.z, minZ, maxZ);
 
@@ -55,14 +52,18 @@ void UpdateRain(Vector3 cameraPosition, int rainCount) {
             rainDrops[i].position.y = GetRandomValue(20, MAX_OFFSET);
         }
     }
-
-
 }
 
-void DrawRain(Model rain, Vector3 cameraPosition, int rainCount) {
-    UpdateRain(cameraPosition, rainCount);
+void DrawRain(Model rain, Vector3 cameraPosition) {
+    static int activeRain = 100; // Start with 100 rain drops
 
-    for (int i = 0; i < RAINDROP_COUNT; i++) {
+    // Update rain drops 
+    UpdateRain(cameraPosition, activeRain);
+
+    for (int i = 0; i < activeRain; i++) {
         DrawModelEx(rain, rainDrops[i].position, (Vector3){1.0f, 0.0f, 0.0f}, 90.0f, RAINDROP_SCALE, DARKGRAY);
     }
+
+    // Increase rain drops by 10 every frame till it reaches RAINDROP_COUNT
+    activeRain = (activeRain < RAINDROP_COUNT) ? activeRain + 5 : RAINDROP_COUNT;
 }
