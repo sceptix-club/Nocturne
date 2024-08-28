@@ -1,4 +1,4 @@
-#include "../include/world/grass.h"
+#include "world/grass.h"
 #include <time.h>
 #include <math.h>
 #include <stdlib.h>
