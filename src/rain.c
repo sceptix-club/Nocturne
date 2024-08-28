@@ -10,11 +10,18 @@ typedef struct RainDrop {
 
 rain_drop rainDrops[RAINDROP_COUNT];
 
+int activeRain = 0;
+
 Model Rain() {
     Mesh plane = GenMeshPlane(0.03f, 0.3f, 1, 1);
     Model rain = LoadModelFromMesh(plane);
 
     return rain;
+}
+
+void ResetActiveRainDrops()
+{
+    activeRain = 0;
 }
 
 // Helper function to wrap rain drops position around the camera
@@ -30,7 +37,7 @@ static inline void WrapRainPosition(float *position, float min, float max) {
 void InitRain(Vector3 cameraPosition) {
     for (int i = 0; i < RAINDROP_COUNT; i++) {
         rainDrops[i].position.x = GetRandomValue(cameraPosition.x - MAX_OFFSET, cameraPosition.x + MAX_OFFSET);
-        rainDrops[i].position.y = GetRandomValue(5, MAX_OFFSET);
+        rainDrops[i].position.y = GetRandomValue(15, MAX_OFFSET);
         rainDrops[i].position.z = GetRandomValue(cameraPosition.z - MAX_OFFSET, cameraPosition.z + MAX_OFFSET);
     }
 }
@@ -55,8 +62,6 @@ void UpdateRain(Vector3 cameraPosition, int activeRain) {
 }
 
 void DrawRain(Model rain, Vector3 cameraPosition) {
-    static int activeRain = 100; // Start with 100 rain drops
-
     // Update rain drops 
     UpdateRain(cameraPosition, activeRain);
 
@@ -65,5 +70,6 @@ void DrawRain(Model rain, Vector3 cameraPosition) {
     }
 
     // Increase rain drops by 10 every frame till it reaches RAINDROP_COUNT
-    activeRain = (activeRain < RAINDROP_COUNT) ? activeRain + 5 : RAINDROP_COUNT;
+    if (activeRain < 200) activeRain += 2;
+    else activeRain = (activeRain < RAINDROP_COUNT) ? activeRain + 5 : RAINDROP_COUNT;
 }

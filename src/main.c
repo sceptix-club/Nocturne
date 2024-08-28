@@ -70,6 +70,7 @@ int main(void)
     SetTargetFPS(60);
 
     bool toggleRain = false;
+    bool previousRain = false;
 
     // --------------------------------------------------------------------------------------
 
@@ -83,6 +84,13 @@ int main(void)
         if (IsKeyPressed(KEY_R)) {
             toggleRain = !toggleRain;
         }
+
+        // Toggle rain logic to reset rain drops
+        if (!toggleRain && previousRain) {
+            ResetActiveRainDrops();
+        }
+        previousRain = toggleRain;
+        // =====================================
 
         UpdateCameraPro(&camera,
         (Vector3){
@@ -122,6 +130,7 @@ int main(void)
 
                 //Draw Rain
                 if (toggleRain) DrawRain(rain, camera.target);
+                else ResetActiveRainDrops();
                 
                 rlEnableBackfaceCulling();     
                 //Draw Ground with backface culling
