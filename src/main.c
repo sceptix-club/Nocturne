@@ -1,5 +1,6 @@
 #include <raylib.h>
 #include <rcamera.h>
+#include <stdio.h>
 
 #include "rlgl.h"
 #include "raymath.h"
@@ -63,10 +64,13 @@ int main(void)
     InitFireflies(camera.target);
 
     //Initialize Rain
-    InitRain();
+    InitRain(camera.target);
 
     DisableCursor();
     SetTargetFPS(60);
+
+    bool toggleRain = false;
+    int rainCount = 100;
 
     // --------------------------------------------------------------------------------------
 
@@ -75,6 +79,10 @@ int main(void)
         if (IsKeyPressed(KEY_F))
         {
             ToggleFullscreen();
+        }
+
+        if (IsKeyPressed(KEY_R)) {
+            toggleRain = !toggleRain;
         }
 
         UpdateCameraPro(&camera,
@@ -96,14 +104,14 @@ int main(void)
         //Updating grass patch
         UpdateGrassPatches(camera.target);
 
-        lightShaderUpdate(camera, light);
+        //lightShaderUpdate(camera, light);
         //Updating Ground
         UpdateGroundPatches(camera.target);
         BeginDrawing();
             ClearBackground(BLACK);
             BeginMode3D(camera);
 
-                BeginShaderMode(light);
+                //BeginShaderMode(light);
                 rlDisableBackfaceCulling();
 
                 rlDisableDepthMask();
@@ -112,21 +120,18 @@ int main(void)
 
                 //Draw Grass
                 //DrawGrassNew(grass);
-                
+
                 //Draw Rain
-                DrawRain(rain);
-                rlEnableBackfaceCulling();
+                if (toggleRain) DrawRain(rain, camera.target, rainCount);
+                
+                rlEnableBackfaceCulling();     
                 //Draw Ground with backface culling
                 DrawGround(ground);
 
                 //Draw Fireflies
                 DrawFireflies(firefly, camera.target);
 
-                
-
             EndMode3D();
-
-
         EndDrawing();
     }
     UnloadModel(skybox);
