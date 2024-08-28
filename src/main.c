@@ -17,6 +17,7 @@
 #include "world/ground.h"
 #include "world/grass.h"
 #include "world/firefly.h"
+#include "world/props.h"
 #include "stdio.h"
 
 int main(void)
@@ -31,7 +32,7 @@ int main(void)
     camera.position = (Vector3){ 0.0f, 4.5f, 0.0f };
     camera.target = (Vector3){ 0.185f, 1.0f, -1.0f };
     camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };
-    camera.fovy = 85.0f;
+    camera.fovy = 75.0f;
     camera.projection = CAMERA_PERSPECTIVE;
 
     int cameraMode = CAMERA_FIRST_PERSON;
@@ -50,6 +51,8 @@ int main(void)
 
     // firefly model
     Model firefly = Firefly();
+
+    Model rubble = Rubble(light);
 
     //Initialize grass
     InitGrass(camera.target);
@@ -74,7 +77,7 @@ int main(void)
 
         UpdateCamera(&camera, cameraMode);
         //Updating grass patch
-        UpdateGrassPatches(camera.target);
+        UpdateGrassPatches(camera.position,(Vector3){1.0f,0.0f,1.0f});
 
         lightShaderUpdate(camera, light);
         //Updating Ground
@@ -95,13 +98,12 @@ int main(void)
                 rlEnableBackfaceCulling();
                 //Draw Ground with backface culling
                 DrawGround(ground);
-
                 //Draw Fireflies
                 DrawFireflies(firefly, camera.target);
+                DrawModel(rubble,Vector3Zero(),3.0f,RAYWHITE);
+            EndShaderMode();
 
             EndMode3D();
-
-
         EndDrawing();
     }
     // UnloadModel(grass);
