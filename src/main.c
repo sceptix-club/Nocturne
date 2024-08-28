@@ -17,6 +17,7 @@
 #include "world/ground.h"
 #include "world/grass.h"
 #include "world/firefly.h"
+#include "world/rain.h"
 #include "stdio.h"
 
 int main(void)
@@ -49,6 +50,9 @@ int main(void)
     // firefly model
     Model firefly = Firefly();
 
+    // rain model
+    Model rain = Rain();
+
     //Initialize grass
     InitGrass(camera.target);
 
@@ -57,6 +61,9 @@ int main(void)
 
     //Initialize Fireflies
     InitFireflies(camera.target);
+
+    //Initialize Rain
+    InitRain();
 
     DisableCursor();
     SetTargetFPS(60);
@@ -104,7 +111,10 @@ int main(void)
                 rlEnableDepthMask();
 
                 //Draw Grass
-                DrawGrassNew(grass);
+                //DrawGrassNew(grass);
+                
+                //Draw Rain
+                DrawRain(rain);
                 rlEnableBackfaceCulling();
                 //Draw Ground with backface culling
                 DrawGround(ground);
@@ -112,15 +122,18 @@ int main(void)
                 //Draw Fireflies
                 DrawFireflies(firefly, camera.target);
 
+                
+
             EndMode3D();
 
 
         EndDrawing();
     }
-    UnloadModel(grass);
-
-    UnloadModel(ground);
     UnloadModel(skybox);
+    UnloadModel(grass);
+    UnloadModel(ground);
+    UnloadModel(firefly);
+    UnloadModel(rain);
     UnloadShader(skybox.materials[0].shader);
     UnloadTexture(skybox.materials[0].maps[MATERIAL_MAP_CUBEMAP].texture);
 
