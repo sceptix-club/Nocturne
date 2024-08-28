@@ -5,12 +5,15 @@
 #include <raymath.h>
 #define NUM_GRASS_BLADES 8000
 #define PATCH_SIZE 50.0f
+#define ANIM_SCALE 10.0f
 
 typedef struct
 {
     Vector3 position;
     float scale;
     float rotation;
+    float animationOffsetSin;
+    float animationOffsetCos;
 } grass_blade;
 
 grass_blade grassBlades[NUM_GRASS_BLADES];
@@ -45,6 +48,10 @@ void InitGrass(Vector3 playerPos)
         grassBlades[i].position.y = 0.0f;                       // Initial height
         grassBlades[i].scale = GetRandomValue(5,15); // Random scale 1.0 between  and 15.0
         grassBlades[i].rotation = GetRandomValue(10, 270);
+        // Calculated here so that DrawGrassNew() doesn't have to call the
+        // trigonometric functions NUM_GRASS_BLADES times
+        grassBlades[i].animationOffsetSin = sinf(GetRandomValue(0, 30)) * DEG2RAD; // SIN(ANIM)
+        grassBlades[i].animationOffsetCos = cosf(GetRandomValue(0, 30)) * DEG2RAD; // COS(ANIM)
     }
 }
 void UpdateGrassPatches(Vector3 playerPos)
@@ -70,12 +77,27 @@ void UpdateGrassPatches(Vector3 playerPos)
         }
     }
 }
+
 void DrawGrassNew(Model grass)
 {
     time_init += GetFrameTime();
-    float bendFactor = sinf(time_init * 2.0f) * 3.0f * DEG2RAD;
+
+    // SIN(BEND + ANIM) = SIN(BEND) * COS(ANIM) + COS(BEND) + SIN(ANIM)
+    float sinBendFactor = sinf(time_init * 2.0f) * DEG2RAD * ANIM_SCALE;
+    float cosBendFactor = cosf(time_init * 2.0f) * DEG2RAD * ANIM_SCALE;
+
     for (int i = 0; i < NUM_GRASS_BLADES; i++)
     {
-        DrawModelEx(grass, grassBlades[i].position, (Vector3){1.0f, 0.0f, 0.0f}, (grassBlades[i].rotation * bendFactor), (Vector3){grassBlades[i].scale, grassBlades[i].scale, grassBlades[i].scale}, DARKGRAY);
+        const float bendFactor = ((sinBendFactor * grassBlades[i].animationOffsetCos)
+                               + (cosBendFactor * grassBlades[i].animationOffsetSin))
+                               * ANIM_SCALE;
+        DrawModelEx(
+            grass,
+            grassBlades[i].position,
+            (Vector3){1.0f, 0.0f, 0.0f},
+            (grassBlades[i].rotation * bendFactor),
+            (Vector3){grassBlades[i].scale, grassBlades[i].scale, grassBlades[i].scale},
+            DARKGRAY
+        );
     }
 }
