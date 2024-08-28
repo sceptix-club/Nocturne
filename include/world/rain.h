@@ -9,6 +9,6 @@
 
 Model Rain();
 void InitRain(Vector3 cameraPosition);
-void DrawRain(Model rain, Vector3 cameraPosition, int rainCount);
+void DrawRain(Model rain, Vector3 cameraPosition);
 
 #endif // RAIN_H
