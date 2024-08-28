@@ -35,8 +35,6 @@ int main(void)
     camera.fovy = 75.0f;
     camera.projection = CAMERA_PERSPECTIVE;
 
-    int cameraMode = CAMERA_FIRST_PERSON;
-
     // Model ground = Ground();
     Model skybox = SkyBox();
 
@@ -75,7 +73,22 @@ int main(void)
             ToggleFullscreen();
         }
 
-        UpdateCamera(&camera, cameraMode);
+        UpdateCameraPro(&camera,
+        (Vector3){
+            (IsKeyDown(KEY_W) || IsKeyDown(KEY_UP))*0.1f -      // Move forward-backward
+            (IsKeyDown(KEY_S) || IsKeyDown(KEY_DOWN))*0.1f,    
+            (IsKeyDown(KEY_D) || IsKeyDown(KEY_RIGHT))*0.1f -   // Move right-left
+            (IsKeyDown(KEY_A) || IsKeyDown(KEY_LEFT))*0.1f,
+            0.0f                                                // Move up-down
+        },
+        (Vector3){
+            // Edit delta X for faster sideways movement
+            GetMouseDelta().x*0.1f,                            // Rotation: yaw
+            GetMouseDelta().y*0.08f,                            // Rotation: pitch
+            0.0f                                                // Rotation: roll
+        },
+        0.0f);                              // Move to target (zoom)
+
         //Updating grass patch
         UpdateGrassPatches(camera.position,(Vector3){1.0f,0.0f,1.0f});
 
@@ -106,7 +119,7 @@ int main(void)
             EndMode3D();
         EndDrawing();
     }
-    // UnloadModel(grass);
+    UnloadModel(grass);
 
     UnloadModel(ground);
     UnloadModel(skybox);
