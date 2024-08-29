@@ -47,7 +47,7 @@ int main(void)
     Shader light = SetLights();
 
     // display cam position
-    Model ground = Ground(light);
+    Model ground = GroundModel(light);
 
     //  grass model
     Model grass = GrassBladeModel(light);
@@ -147,8 +147,7 @@ int main(void)
         0.0f);                         // Move to target (zoom)
 
         lightShaderUpdate(camera, light);
-        //Updating Ground
-        UpdateGroundPatches(camera.target);
+
         BeginDrawing();
             ClearBackground(BLACK);
             switch(currentScreen)
@@ -189,7 +188,7 @@ int main(void)
                 
                 rlEnableBackfaceCulling();     
                 //Draw Ground with backface culling
-                DrawGround(ground);
+                DrawGround(ground, camera.target);
 
                 //Draw Fireflies
                 DrawFireflies(firefly, camera.target);
