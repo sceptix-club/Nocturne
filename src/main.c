@@ -56,7 +56,7 @@ int main(void)
     Model firefly = FireflyModel();
 
     // rain model
-    Model rain = Rain();
+    Model rain = RainModel();
 
     //Initialize grass
     InitGrass(camera.target);

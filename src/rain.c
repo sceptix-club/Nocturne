@@ -1,4 +1,5 @@
-#include "../include/world/rain.h"
+#include "world/rain.h"
+#include "utils/wrapPosition.h"
 
 #define RAINDROP_COUNT 1000
 #define RAINDROP_SCALE (Vector3){1.0f, 1.0f, 1.0f}
@@ -7,13 +8,13 @@
 
 typedef struct RainDrop {
     Vector3 position;
-} rain_drop;
+} RainDrop;
 
-rain_drop rainDrops[RAINDROP_COUNT];
+RainDrop rainDrops[RAINDROP_COUNT];
 
 int activeRain = START_RAIN_COUNT;
 
-Model Rain() {
+Model RainModel() {
     Mesh plane = GenMeshPlane(0.03f, 0.3f, 1, 1);
     Model rain = LoadModelFromMesh(plane);
 
@@ -25,26 +26,10 @@ inline void ResetActiveRainDrops()
     activeRain = START_RAIN_COUNT;
 }
 
-// Helper function to wrap rain drops position around the camera
-static inline void WrapRainPosition(float* position, float min, float max) {
-    if (*position > max) {
-        *position = min;
-    } else if (*position < min) {
-        *position = max;
-    }
-}
-
-static inline void CalculateMinMax(Vector3* cameraPosition, float* minX, float* maxX, float* minZ, float* maxZ) {
-    *minX = cameraPosition->x - MAX_OFFSET;
-    *maxX = cameraPosition->x + MAX_OFFSET;
-    *minZ = cameraPosition->z - MAX_OFFSET;
-    *maxZ = cameraPosition->z + MAX_OFFSET;
-}
-
 // Initialize rain drops positions
 void InitRain(Vector3 cameraPosition) {
     float maxX, minX, maxZ, minZ;
-    CalculateMinMax(&cameraPosition, &minX, &maxX, &minZ, &maxZ);
+    CalculateMinMax(&cameraPosition, &minX, &maxX, &minZ, &maxZ, MAX_OFFSET);
 
     for (int i = 0; i < RAINDROP_COUNT; i++) {
         rainDrops[i].position.x = GetRandomValue(minX, maxX);
@@ -57,11 +42,11 @@ void InitRain(Vector3 cameraPosition) {
 void UpdateRain(Vector3 cameraPosition, int activeRain) {
     float maxX, minX, maxZ, minZ;
     
-    CalculateMinMax(&cameraPosition, &minX, &maxX, &minZ, &maxZ);
+    CalculateMinMax(&cameraPosition, &minX, &maxX, &minZ, &maxZ, MAX_OFFSET);
 
     for (int i = 0; i < activeRain; i++) {
-        WrapRainPosition(&rainDrops[i].position.x, minX, maxX);
-        WrapRainPosition(&rainDrops[i].position.z, minZ, maxZ);
+        WrapPosition(&rainDrops[i].position.x, minX, maxX);
+        WrapPosition(&rainDrops[i].position.z, minZ, maxZ);
 
         rainDrops[i].position.y -= 0.3f; // Rain speed
 
