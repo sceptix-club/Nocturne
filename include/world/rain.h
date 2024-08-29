@@ -9,7 +9,7 @@
 
 extern int activeRainDrops;
 
-Model Rain();
+Model RainModel();
 void ResetActiveRainDrops();
 void InitRain(Vector3 cameraPosition);
 void DrawRain(Model rain, Vector3 cameraPosition);
