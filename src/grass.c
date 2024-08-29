@@ -2,7 +2,7 @@
 
 #define GRASSBLADE_COUNT 8000
 #define PATCH_SIZE 50.0f
-#define ANIM_SCALE 10.0f
+#define ANIM_SCALE 8.0f
 
 typedef struct {
     Vector3 position;
