@@ -2,19 +2,22 @@
 #include <time.h>
 #include <math.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <raymath.h>
 #define NUM_GRASS_BLADES 8000
 #define PATCH_SIZE 50.0f
-
+#define MODEL_DISTANCE 7.0f
 typedef struct
 {
     Vector3 position;
     float scale;
     float rotation;
+    bool active;
 } grass_blade;
 
 grass_blade grassBlades[NUM_GRASS_BLADES];
 double time_init = 0.0f;
+float grass_dist,player_dist ;
 
 float Noise(float x, float y)
 {
@@ -45,37 +48,63 @@ void InitGrass(Vector3 playerPos)
         grassBlades[i].position.y = 0.0f;                       // Initial height
         grassBlades[i].scale = GetRandomValue(5,15); // Random scale 1.0 between  and 15.0
         grassBlades[i].rotation = GetRandomValue(10, 270);
+        grassBlades[i].active = true;
     }
 }
-void UpdateGrassPatches(Vector3 playerPos)
+void UpdateGrassPatches(Vector3 playerPos, Vector3 modelPos)
 {
-        for (int i = 0; i < NUM_GRASS_BLADES; i++)
+    for (int i = 0; i < NUM_GRASS_BLADES; i++)
     {
-        if (grassBlades[i].position.x < playerPos.x - PATCH_SIZE / 2)
+        player_dist = Vector3Distance(playerPos, modelPos);
+        grass_dist = Vector3Distance(grassBlades[i].position, modelPos);
+
+        // Determining if grass should be active or not
+        if (player_dist <= MODEL_DISTANCE*3)
         {
-            grassBlades[i].position.x += PATCH_SIZE;
+            if (grass_dist < MODEL_DISTANCE)
+            {
+                grassBlades[i].active = false;
+            }
+            else
+            {
+                grassBlades[i].active = true;
+            }
         }
-        else if (grassBlades[i].position.x > playerPos.x + PATCH_SIZE / 2)
+        else
         {
-            grassBlades[i].position.x -= PATCH_SIZE;
+            grassBlades[i].active = true;
         }
 
-        if (grassBlades[i].position.z < playerPos.z - PATCH_SIZE / 2)
+        if (grassBlades[i].active)
         {
-            grassBlades[i].position.z += PATCH_SIZE;
-        }
-        else if (grassBlades[i].position.z > playerPos.z + PATCH_SIZE / 2)
-        {
-            grassBlades[i].position.z -= PATCH_SIZE;
+            if (grassBlades[i].position.x < playerPos.x - PATCH_SIZE / 2)
+            {
+                grassBlades[i].position.x += PATCH_SIZE;
+            }
+            else if (grassBlades[i].position.x > playerPos.x + PATCH_SIZE / 2)
+            {
+                grassBlades[i].position.x -= PATCH_SIZE;
+            }
+
+            if (grassBlades[i].position.z < playerPos.z - PATCH_SIZE / 2)
+            {
+                grassBlades[i].position.z += PATCH_SIZE;
+            }
+            else if (grassBlades[i].position.z > playerPos.z + PATCH_SIZE / 2)
+            {
+                grassBlades[i].position.z -= PATCH_SIZE;
+            }
         }
     }
 }
+
 void DrawGrassNew(Model grass)
 {
     time_init += GetFrameTime();
     float bendFactor = sinf(time_init * 2.0f) * 3.0f * DEG2RAD;
     for (int i = 0; i < NUM_GRASS_BLADES; i++)
     {
-        DrawModelEx(grass, grassBlades[i].position, (Vector3){1.0f, 0.0f, 0.0f}, (grassBlades[i].rotation * bendFactor), (Vector3){grassBlades[i].scale, grassBlades[i].scale, grassBlades[i].scale}, BLACK);
+        if(grassBlades[i].active)
+            DrawModelEx(grass, grassBlades[i].position, (Vector3){1.0f, 0.0f, 0.0f}, (grassBlades[i].rotation * bendFactor), (Vector3){grassBlades[i].scale, grassBlades[i].scale, grassBlades[i].scale}, BLACK);
     }
 }
