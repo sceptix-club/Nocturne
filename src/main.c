@@ -19,7 +19,6 @@
 #include "world/grass.h"
 #include "world/firefly.h"
 #include "world/rain.h"
-#include "stdio.h"
 
 typedef enum GameScreen { LOGO = 0, TITLE, GAMEPLAY} GameScreen;
 
