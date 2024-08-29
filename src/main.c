@@ -53,7 +53,7 @@ int main(void)
     Model grass = GrassBlade(light);
 
     // firefly model
-    Model firefly = Firefly();
+    Model firefly = FireflyModel();
 
     // rain model
     Model rain = Rain();
