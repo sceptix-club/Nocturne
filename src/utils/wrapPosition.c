@@ -1,7 +1,6 @@
 #include "utils/wrapPosition.h"
 
-
-inline void CalculateMinMax(Vector3* cameraPosition, float* minX, float* maxX, float* minZ, float* maxZ, float MAX_OFFSET)
+void CalculateMinMax(Vector3* cameraPosition, float* minX, float* maxX, float* minZ, float* maxZ, float MAX_OFFSET)
 {
     *minX = cameraPosition->x - MAX_OFFSET;
     *maxX = cameraPosition->x + MAX_OFFSET;
@@ -9,7 +8,7 @@ inline void CalculateMinMax(Vector3* cameraPosition, float* minX, float* maxX, f
     *maxZ = cameraPosition->z + MAX_OFFSET;
 }
 
-inline void WrapPosition(float *position, float min, float max)
+void WrapPosition(float *position, float min, float max)
 {
     if (*position > max) {
         *position = min;
