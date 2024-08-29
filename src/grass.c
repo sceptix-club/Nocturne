@@ -20,7 +20,7 @@ static inline float Noise(float x, float y) {
 }
 
 Model GrassBladeModel(Shader lightShader) {
-    Model grass = LoadModel("assets/grass.obj");
+    Model grass = LoadModel("assets/models/grass.obj");
     grass.materials[0].shader = lightShader;
     return grass;
 }
