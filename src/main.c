@@ -77,7 +77,7 @@ int main(void)
 
     // --------------------------------------------------------------------------------------
 
-    while (!WindowShouldClose()) 
+    while (!WindowShouldClose()) // Gameloop
     {
         switch(currentScreen)
         {
@@ -112,7 +112,6 @@ int main(void)
             default: break;
         }
 
-
         if (IsKeyPressed(KEY_F))
         {
             ToggleFullscreen();
@@ -126,8 +125,8 @@ int main(void)
         if (!toggleRain && previousRain) {
             ResetActiveRainDrops();
         }
+
         previousRain = toggleRain;
-        // =====================================
 
         UpdateCameraPro(&camera,
         (Vector3){
@@ -149,7 +148,8 @@ int main(void)
 
         BeginDrawing();
             ClearBackground(BLACK);
-            switch(currentScreen)
+
+            switch(currentScreen) 
             {
                 case LOGO:
                 {
@@ -171,34 +171,39 @@ int main(void)
                     // TODO: Draw GAMEPLAY screen here!
                     BeginMode3D(camera);
 
-                BeginShaderMode(light);
-                rlDisableBackfaceCulling();
+                        BeginShaderMode(light);
+                        rlDisableBackfaceCulling();
 
-                rlDisableDepthMask();
-                   DrawModel(skybox, (Vector3){0,0,0},20.0f,BLACK);
-                rlEnableDepthMask();
+                        rlDisableDepthMask();
+                        DrawModel(skybox, (Vector3){0,0,0},20.0f,BLACK);
+                        rlEnableDepthMask();
 
-                //Draw Grass
-                DrawGrass(grass, camera.target);
+                        //Draw Grass
+                        DrawGrass(grass, camera.target);
 
-                //Draw Rain
-                if (toggleRain) DrawRain(rain, camera.target);
-                else ResetActiveRainDrops();
-                
-                rlEnableBackfaceCulling();     
-                //Draw Ground with backface culling
-                DrawGround(ground, camera.target);
+                        //Draw Rain
+                        if (toggleRain) {
+                            DrawRain(rain, camera.target);
+                        } else {
+                            ResetActiveRainDrops();
+                        }
+                        
+                        rlEnableBackfaceCulling();     
+                        //Draw Ground with backface culling
+                        DrawGround(ground, camera.target);
 
-                //Draw Fireflies
-                DrawFireflies(firefly, camera.target);
+                        //Draw Fireflies
+                        DrawFireflies(firefly, camera.target);
 
-            EndMode3D();
+                    EndMode3D();
 
                 } break;
                 default: break;
             }
+
         EndDrawing();
     }
+
     UnloadModel(grass);
     UnloadModel(ground);
     UnloadModel(firefly);
