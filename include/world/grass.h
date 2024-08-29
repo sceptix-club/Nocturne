@@ -2,11 +2,13 @@
 #define GRASS_H
 
 #include <raylib.h>
+#include <time.h>
+#include <math.h>
+#include <stdlib.h>
+#include <raymath.h>
 
-float Noise(float x, float y);
-Model GrassBlade(Shader lightShader);
-void InitGrass(Vector3 playerPos);
-void UpdateGrassPatches(Vector3 playerPos, Vector3 modelPos);
-void DrawGrassNew(Model grass);
+Model GrassBladeModel(Shader lightShader);
+void InitGrass(Vector3 cameraPosition);
+void DrawGrass(Model grass, Vector3 cameraPosition);
 
 #endif

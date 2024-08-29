@@ -1,46 +1,40 @@
-#include "../include/world/grass.h"
-#include <time.h>
-#include <math.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <raymath.h>
-#define NUM_GRASS_BLADES 8000
+#include "world/grass.h"
+
+#define GRASSBLADE_COUNT 8000
 #define PATCH_SIZE 50.0f
-#define MODEL_DISTANCE 7.0f
-typedef struct
-{
+#define ANIM_SCALE 10.0f
+
+typedef struct {
     Vector3 position;
     float scale;
     float rotation;
-    bool active;
-} grass_blade;
+    float animationOffsetSin;
+    float animationOffsetCos;
+} GrassBlade;
 
-grass_blade grassBlades[NUM_GRASS_BLADES];
+GrassBlade grassBlades[GRASSBLADE_COUNT];
 double time_init = 0.0f;
 float grass_dist,player_dist ;
 
-float Noise(float x, float y)
-{
+static inline float Noise(float x, float y) {
     return sinf(x * 0.1f) * cosf(y * 0.1f) * 5.0f;
-
 }
-Model GrassBlade(Shader lightShader)
-{
+
+Model GrassBladeModel(Shader lightShader) {
     Model grass = LoadModel("assets/grass.obj");
     grass.materials[0].shader = lightShader;
     return grass;
 }
-void InitGrass(Vector3 playerPos)
-{
+
+void InitGrass(Vector3 cameraPosition) {
     srand(time(NULL)); // Seed for random number generation
     // Initialize grass blades with random positions and scales
-    for (int i = 0; i < NUM_GRASS_BLADES; i++)
-    {
+    for (int i = 0; i < GRASSBLADE_COUNT; i++) {
         float angle = GetRandomValue(0, 360) * DEG2RAD;
         float distance = GetRandomValue(0, (int)(PATCH_SIZE * 10)) / 10.0f;
 
-        float x = playerPos.x + distance * cosf(angle);
-        float z = playerPos.z + distance * sinf(angle);
+        float x = cameraPosition.x + distance * cosf(angle);
+        float z = cameraPosition.z + distance * sinf(angle);
         float noise = Noise(x, z);
 
         grassBlades[i].position.x = x + noise;
@@ -48,63 +42,49 @@ void InitGrass(Vector3 playerPos)
         grassBlades[i].position.y = 0.0f;                       // Initial height
         grassBlades[i].scale = GetRandomValue(5,15); // Random scale 1.0 between  and 15.0
         grassBlades[i].rotation = GetRandomValue(10, 270);
-        grassBlades[i].active = true;
+        // Calculated here so that DrawGrassNew() doesn't have to call the
+        // trigonometric functions NUM_GRASS_BLADES times
+        grassBlades[i].animationOffsetSin = sinf(GetRandomValue(0, 30)) * DEG2RAD; // SIN(ANIM)
+        grassBlades[i].animationOffsetCos = cosf(GetRandomValue(0, 30)) * DEG2RAD; // COS(ANIM)
     }
 }
-void UpdateGrassPatches(Vector3 playerPos, Vector3 modelPos)
-{
-    for (int i = 0; i < NUM_GRASS_BLADES; i++)
-    {
-        player_dist = Vector3Distance(playerPos, modelPos);
-        grass_dist = Vector3Distance(grassBlades[i].position, modelPos);
 
-        // Determining if grass should be active or not
-        if (player_dist <= MODEL_DISTANCE*3)
-        {
-            if (grass_dist < MODEL_DISTANCE)
-            {
-                grassBlades[i].active = false;
-            }
-            else
-            {
-                grassBlades[i].active = true;
-            }
-        }
-        else
-        {
-            grassBlades[i].active = true;
+void UpdateGrassPatches(Vector3 cameraPosition) {
+    for (int i = 0; i < GRASSBLADE_COUNT; i++){
+        if (grassBlades[i].position.x < cameraPosition.x - PATCH_SIZE / 2) {
+            grassBlades[i].position.x += PATCH_SIZE;
+        } else if (grassBlades[i].position.x > cameraPosition.x + PATCH_SIZE / 2) {
+            grassBlades[i].position.x -= PATCH_SIZE;
         }
 
-        if (grassBlades[i].active)
-        {
-            if (grassBlades[i].position.x < playerPos.x - PATCH_SIZE / 2)
-            {
-                grassBlades[i].position.x += PATCH_SIZE;
-            }
-            else if (grassBlades[i].position.x > playerPos.x + PATCH_SIZE / 2)
-            {
-                grassBlades[i].position.x -= PATCH_SIZE;
-            }
-
-            if (grassBlades[i].position.z < playerPos.z - PATCH_SIZE / 2)
-            {
-                grassBlades[i].position.z += PATCH_SIZE;
-            }
-            else if (grassBlades[i].position.z > playerPos.z + PATCH_SIZE / 2)
-            {
-                grassBlades[i].position.z -= PATCH_SIZE;
-            }
+        if (grassBlades[i].position.z < cameraPosition.z - PATCH_SIZE / 2){
+            grassBlades[i].position.z += PATCH_SIZE;
+        } else if (grassBlades[i].position.z > cameraPosition.z + PATCH_SIZE / 2) {
+            grassBlades[i].position.z -= PATCH_SIZE;
         }
     }
 }
 
-void DrawGrassNew(Model grass)
-{
+void DrawGrass(Model grass, Vector3 cameraPosition) {
+    UpdateGrassPatches(cameraPosition);
+
     time_init += GetFrameTime();
-    float bendFactor = sinf(time_init * 2.0f) * 3.0f * DEG2RAD;
-    for (int i = 0; i < NUM_GRASS_BLADES; i++)
-    {
-        if(grassBlades[i].active)
-            DrawModelEx(grass, grassBlades[i].position, (Vector3){1.0f, 0.0f, 0.0f}, (grassBlades[i].rotation * bendFactor), (Vector3){grassBlades[i].scale, grassBlades[i].scale, grassBlades[i].scale}, BLACK);
+
+    // SIN(BEND + ANIM) = SIN(BEND) * COS(ANIM) + COS(BEND) + SIN(ANIM)
+    float sinBendFactor = sinf(time_init * 2.0f) * DEG2RAD * ANIM_SCALE;
+    float cosBendFactor = cosf(time_init * 2.0f) * DEG2RAD * ANIM_SCALE;
+
+    for (int i = 0; i < GRASSBLADE_COUNT; i++) {
+        const float bendFactor = ((sinBendFactor * grassBlades[i].animationOffsetCos)
+                               + (cosBendFactor * grassBlades[i].animationOffsetSin))
+                               * ANIM_SCALE;
+        DrawModelEx(
+            grass,
+            grassBlades[i].position,
+            (Vector3){1.0f, 0.0f, 0.0f},
+            (grassBlades[i].rotation * bendFactor),
+            (Vector3){grassBlades[i].scale, grassBlades[i].scale, grassBlades[i].scale},
+            DARKGRAY
+        );
     }
 }
