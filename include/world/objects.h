@@ -2,7 +2,7 @@
 #define OBJECTS_H
 
 void InitObjects();
-Model ObjectModel(Shader light);
+Model ObjectModel();
 void DrawObjects();
 
 #endif

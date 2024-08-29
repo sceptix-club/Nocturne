@@ -14,17 +14,13 @@ typedef struct {
 
 object_t objects[NUM_OBJECTS];
 
-Model ObjectModel(Shader light) {
+Model ObjectModel() {
     Model object = LoadModel("assets/models/sphere.obj");
 
     // Create a default material
     Material material = LoadMaterialDefault();
-
     // Set the diffuse colour to a bright, glowing colour
     material.maps[MATERIAL_MAP_DIFFUSE].color = (Color){ 255, 0, 0, 255 };
-
-    // Set lightshader
-    // material.shader = light;
 
     object.materials[0] = material;
 
