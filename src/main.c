@@ -1,5 +1,6 @@
 #include <raylib.h>
 #include <rcamera.h>
+#include <stdio.h>
 
 #include "rlgl.h"
 #include "raymath.h"
@@ -18,15 +19,20 @@
 #include "world/grass.h"
 #include "world/firefly.h"
 #include "world/props.h"
+#include "world/rain.h"
 #include "stdio.h"
+
+typedef enum GameScreen { LOGO = 0, TITLE, GAMEPLAY} GameScreen;
 
 int main(void)
 {
     const int screenWidth = 1600;
     const int screenHeight = 900;
+    GameScreen currentScreen = LOGO;
 
     SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT | FLAG_MSAA_4X_HINT);
     InitWindow(screenWidth, screenHeight, "ARTEMIS");
+    int framesCounter = 0;
 
     Camera camera = {0};
     camera.position = (Vector3){ 0.0f, 4.5f, 0.0f };
@@ -42,15 +48,18 @@ int main(void)
     Shader light = SetLights();
 
     // display cam position
-    Model ground = Ground(light);
+    Model ground = GroundModel(light);
 
     //  grass model
-    Model grass = GrassBlade(light);
+    Model grass = GrassBladeModel(light);
 
     // firefly model
-    Model firefly = Firefly();
+    Model firefly = FireflyModel();
 
-    Model rubble = Rubble(light);
+    // rain model
+    Model rain = RainModel();
+
+    Model rubble = Tree(light);
 
     //Initialize grass
     InitGrass(camera.target);
@@ -61,17 +70,68 @@ int main(void)
     //Initialize Fireflies
     InitFireflies(camera.target);
 
+    //Initialize Rain
+    InitRain(camera.target);
+
     DisableCursor();
     SetTargetFPS(60);
+
+    bool toggleRain = false;
+    bool previousRain = false;
 
     // --------------------------------------------------------------------------------------
 
     while (!WindowShouldClose()) 
     {
+        switch(currentScreen)
+        {
+            case LOGO:
+            {
+                // TODO: Update LOGO screen variables here!
+
+                framesCounter++;    // Count frames
+
+                // Wait for 2 seconds (120 frames) before jumping to TITLE screen
+                if (framesCounter > 120)
+                {
+                    currentScreen = TITLE;
+                }
+            } break;
+            case TITLE:
+            {
+                // TODO: Update TITLE screen variables here!
+
+                // Press enter to change to GAMEPLAY screen
+                if (IsKeyPressed(KEY_ENTER) || IsGestureDetected(GESTURE_TAP))
+                {
+                    currentScreen = GAMEPLAY;
+                }
+            } break;
+            case GAMEPLAY:
+            {
+                // TODO: Update GAMEPLAY screen variables here!
+
+                // Press enter to change to ENDING screen
+            } break;
+            default: break;
+        }
+
+
         if (IsKeyPressed(KEY_F))
         {
             ToggleFullscreen();
         }
+
+        if (IsKeyPressed(KEY_R)) {
+            toggleRain = !toggleRain;
+        }
+
+        // Toggle rain logic to reset rain drops
+        if (!toggleRain && previousRain) {
+            ResetActiveRainDrops();
+        }
+        previousRain = toggleRain;
+        // =====================================
 
         UpdateCameraPro(&camera,
         (Vector3){
@@ -87,17 +147,33 @@ int main(void)
             GetMouseDelta().y*0.08f,                            // Rotation: pitch
             0.0f                                                // Rotation: roll
         },
-        0.0f);                              // Move to target (zoom)
-
-        //Updating grass patch
-        UpdateGrassPatches(camera.position,(Vector3){1.0f,0.0f,1.0f});
+        0.0f);                         // Move to target (zoom)
 
         lightShaderUpdate(camera, light);
-        //Updating Ground
-        UpdateGroundPatches(camera.target);
+
         BeginDrawing();
             ClearBackground(BLACK);
-            BeginMode3D(camera);
+            switch(currentScreen)
+            {
+                case LOGO:
+                {
+                    // TODO: Draw LOGO screen here!
+                    DrawText("LOGO SCREEN", 20, 20, 40, LIGHTGRAY);
+                    DrawText("WAIT for 2 SECONDS...", 290, 220, 20, GRAY);
+
+                } break;
+                case TITLE:
+                {
+                    // TODO: Draw TITLE screen here!
+                    DrawRectangle(0, 0, screenWidth, screenHeight, GREEN);
+                    DrawText("TITLE SCREEN", 20, 20, 40, DARKGREEN);
+                    DrawText("PRESS ENTER to GAMEPLAY SCREEN", 120, 220, 20, DARKGREEN);
+
+                } break;
+                case GAMEPLAY:
+                {
+                    // TODO: Draw GAMEPLAY screen here!
+                    BeginMode3D(camera);
 
                 BeginShaderMode(light);
                 rlDisableBackfaceCulling();
@@ -107,24 +183,35 @@ int main(void)
                 rlEnableDepthMask();
 
                 //Draw Grass
-                DrawGrassNew(grass);
-                rlEnableBackfaceCulling();
+                DrawGrass(grass, camera.target);
+
+                //Draw Rain
+                if (toggleRain) DrawRain(rain, camera.target);
+                else ResetActiveRainDrops();
+                
+                rlEnableBackfaceCulling();     
                 //Draw Ground with backface culling
-                DrawGround(ground);
+                DrawGround(ground, camera.target);
+
                 //Draw Fireflies
                 DrawFireflies(firefly, camera.target);
                 DrawModel(rubble,Vector3Zero(),3.0f,RAYWHITE);
             EndShaderMode();
 
             EndMode3D();
+
+                } break;
+                default: break;
+            }
         EndDrawing();
     }
     UnloadModel(grass);
-
     UnloadModel(ground);
-    UnloadModel(skybox);
+    UnloadModel(firefly);
+    UnloadModel(rain);
     UnloadShader(skybox.materials[0].shader);
     UnloadTexture(skybox.materials[0].maps[MATERIAL_MAP_CUBEMAP].texture);
+    UnloadModel(skybox);
 
     CloseWindow();
 
