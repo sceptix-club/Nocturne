@@ -34,8 +34,8 @@ int main(void)
     int framesCounter = 0;
 
     Camera camera = {0};
-    camera.position = (Vector3){ 0.0f, 4.5f, 0.0f };
-    camera.target = (Vector3){ 0.185f, 1.0f, -1.0f };
+    camera.position = (Vector3){ 0.0f, 5.0f, 0.0f };
+    camera.target = (Vector3){ 5.0f, 5.0f, 0.0f };
     camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };
     camera.fovy = 85.0f;
     camera.projection = CAMERA_PERSPECTIVE;
