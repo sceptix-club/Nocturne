@@ -1,10 +1,11 @@
 #ifndef GROUND_H
 #define GROUND_H
-#include <raylib.h>
 
-Model Ground(Shader lightShader);
-void InitGround(Vector3 playerPos);
-void UpdateGroundPatches(Vector3 playerPos);
-void DrawGround(Model ground);
+#include <raylib.h>
+#include <raymath.h>
+
+Model GroundModel(Shader lightShader);
+void InitGround(Vector3 cameraPosition);
+void DrawGround(Model ground, Vector3 cameraPosition);
 
 #endif

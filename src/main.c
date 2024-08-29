@@ -47,16 +47,16 @@ int main(void)
     Shader light = SetLights();
 
     // display cam position
-    Model ground = Ground(light);
+    Model ground = GroundModel(light);
 
     //  grass model
-    Model grass = GrassBlade(light);
+    Model grass = GrassBladeModel(light);
 
     // firefly model
-    Model firefly = Firefly();
+    Model firefly = FireflyModel();
 
     // rain model
-    Model rain = Rain();
+    Model rain = RainModel();
 
     //Initialize grass
     InitGrass(camera.target);
@@ -146,12 +146,8 @@ int main(void)
         },
         0.0f);                         // Move to target (zoom)
 
-        //Updating grass patch
-        UpdateGrassPatches(camera.target);
-
         lightShaderUpdate(camera, light);
-        //Updating Ground
-        UpdateGroundPatches(camera.target);
+
         BeginDrawing();
             ClearBackground(BLACK);
             switch(currentScreen)
@@ -184,7 +180,7 @@ int main(void)
                 rlEnableDepthMask();
 
                 //Draw Grass
-                //DrawGrassNew(grass);
+                DrawGrass(grass, camera.target);
 
                 //Draw Rain
                 if (toggleRain) DrawRain(rain, camera.target);
@@ -192,7 +188,7 @@ int main(void)
                 
                 rlEnableBackfaceCulling();     
                 //Draw Ground with backface culling
-                DrawGround(ground);
+                DrawGround(ground, camera.target);
 
                 //Draw Fireflies
                 DrawFireflies(firefly, camera.target);
