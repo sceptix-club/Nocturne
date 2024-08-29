@@ -1,4 +1,5 @@
-#include "../include/world/firefly.h"
+#include "world/firefly.h"
+#include "utils/wrapPosition.h"
 
 #define FIREFLY_COUNT 50
 #define FIREFLY_RADIUS 0.07f // Size of the firefly
@@ -11,11 +12,11 @@
 typedef struct Firefly {
     Vector3 position;
     Vector3 velocity;
-} firefly;
+} Firefly;
 
-firefly fireflies[FIREFLY_COUNT];
+Firefly fireflies[FIREFLY_COUNT];
 
-Model Firefly() {
+Model FireflyModel() {
     Mesh sphere = GenMeshSphere(FIREFLY_RADIUS, 8, 8);
     Model firefly = LoadModelFromMesh(sphere);
     
@@ -23,18 +24,9 @@ Model Firefly() {
 }
 
 // Helper function to apply Brownian motion
-static inline void BrownianMotionFirefly(firefly *f) {
+static inline void BrownianMotionFirefly(Firefly *f) {
     f->position = Vector3Add(f->position, f->velocity);
     f->velocity =Vector3AddValue(f->velocity, ((float)rand() / RAND_MAX - 0.5f) * BROWNIAN_VARIANCE); // small brownian motion added to velocity
-}
-
-// Helper function to wrap firefly position around the camera
-static inline void WrapFireflyPosition(float *position, float min, float max) {
-    if (*position > max) {
-        *position = min;
-    } else if (*position < min) {
-        *position = max;
-    }
 }
 
 // Initialize fireflies with random positions and velocities
@@ -53,18 +45,16 @@ void InitFireflies(Vector3 cameraPosition) {
 
 // Update fireflies position
 void UpdateFireflies(Vector3 cameraPosition) {
-    float maxX = cameraPosition.x + MAX_OFFSET;
-    float minX = cameraPosition.x - MAX_OFFSET;
-    float maxZ = cameraPosition.z + MAX_OFFSET;
-    float minZ = cameraPosition.z - MAX_OFFSET;
+    float minX, maxX, minZ, maxZ;
+    CalculateMinMax(&cameraPosition, &minX, &maxX, &minZ, &maxZ, MAX_OFFSET);
 
     for (int i = 0; i < FIREFLY_COUNT; i++) {
         // Apply Brownian motion
         BrownianMotionFirefly(&fireflies[i]);
 
         // Wrap fireflies position around the camera
-        WrapFireflyPosition(&fireflies[i].position.x, minX, maxX);
-        WrapFireflyPosition(&fireflies[i].position.z, minZ, maxZ);
+        WrapPosition(&fireflies[i].position.x, minX, maxX);
+        WrapPosition(&fireflies[i].position.z, minZ, maxZ);
 
         // Clamp firefly position to the ground and max height
         if (fireflies[i].position.y < 2) {
