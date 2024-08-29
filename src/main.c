@@ -16,6 +16,7 @@
 #include "shaders/lights.h"
 #include "world/skybox.h"
 #include "world/ground.h"
+#include "world/objects.h"
 #include "world/grass.h"
 #include "world/firefly.h"
 #include "world/rain.h"
@@ -49,6 +50,9 @@ int main(void)
     // display cam position
     Model ground = GroundModel(light);
 
+    // Get the object model
+    Model object = ObjectModel(light);
+
     //  grass model
     Model grass = GrassBladeModel(light);
 
@@ -63,6 +67,9 @@ int main(void)
 
     //Initialize Ground
     InitGround(camera.target);
+
+    // Initialise hidden objects
+    InitObjects();
 
     //Initialize Fireflies
     InitFireflies(camera.target);
@@ -178,6 +185,9 @@ int main(void)
                 rlDisableDepthMask();
                    DrawModel(skybox, (Vector3){0,0,0},20.0f,BLACK);
                 rlEnableDepthMask();
+
+                // Random objects
+                DrawObjects(object);
 
                 //Draw Grass
                 DrawGrass(grass, camera.target);
