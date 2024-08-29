@@ -7,7 +7,7 @@
 #include <math.h>
 #include <raymath.h>
 
-Model Firefly();
+Model FireflyModel();
 void InitFireflies(Vector3 cameraPosition);
 void DrawFireflies(Model firefly, Vector3 cameraPosition);
 
