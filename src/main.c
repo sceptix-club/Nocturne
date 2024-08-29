@@ -50,7 +50,7 @@ int main(void)
     Model ground = Ground(light);
 
     //  grass model
-    Model grass = GrassBlade(light);
+    Model grass = GrassBladeModel(light);
 
     // firefly model
     Model firefly = FireflyModel();
@@ -146,9 +146,6 @@ int main(void)
         },
         0.0f);                         // Move to target (zoom)
 
-        //Updating grass patch
-        UpdateGrassPatches(camera.target);
-
         lightShaderUpdate(camera, light);
         //Updating Ground
         UpdateGroundPatches(camera.target);
@@ -184,7 +181,7 @@ int main(void)
                 rlEnableDepthMask();
 
                 //Draw Grass
-                //DrawGrassNew(grass);
+                DrawGrass(grass, camera.target);
 
                 //Draw Rain
                 if (toggleRain) DrawRain(rain, camera.target);
