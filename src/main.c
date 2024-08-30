@@ -72,11 +72,9 @@ int main(void)
     //Initialize Rain
     InitRain(camera.target);
 
-    //Empty texture for film grain
-    Shader vignette = SetVignette();
-    Shader bloom = SetBloom();
-    RenderTexture2D vTexture = LoadRenderTexture(GetMonitorWidth(GetCurrentMonitor()), GetMonitorHeight(GetCurrentMonitor())); // Vignette texture.
-    RenderTexture2D bTexture = LoadRenderTexture(GetMonitorWidth(GetCurrentMonitor()), GetMonitorHeight(GetCurrentMonitor())); // Bloom overlay.
+    //Empty texture for cinamtic shader
+    Shader cinematic = Cinemtic();
+    RenderTexture2D cTexture = LoadRenderTexture(GetMonitorWidth(GetCurrentMonitor()), GetMonitorHeight(GetCurrentMonitor())); // Bloom overlay.
     DisableCursor();
     SetTargetFPS(60);
 
@@ -149,11 +147,7 @@ int main(void)
         
 
         // Begin drawing
-        BeginDrawing();
-        BeginTextureMode(vTexture);
-        ClearBackground(BLACK);
-
-        BeginTextureMode(bTexture);
+        BeginTextureMode(cTexture);
         ClearBackground(BLACK);
         switch(currentScreen)
         {
@@ -197,24 +191,18 @@ int main(void)
             default: break;
         }
             EndTextureMode();
-            EndTextureMode();
 
-            BeginShaderMode(vignette);
-            DrawTextureRec(vTexture.texture, (Rectangle){0, 0, vTexture.texture.width, -vTexture.texture.height}, (Vector2){0, 0}, BLANK);
-            EndShaderMode();
-
-            BeginShaderMode(bloom);
-            DrawTextureRec(bTexture.texture, (Rectangle){0, 0, bTexture.texture.width, -bTexture.texture.height}, (Vector2){0, 0}, BLANK);
+            BeginShaderMode(cinematic);
+            DrawTextureRec(cTexture.texture, (Rectangle){0, 0, cTexture.texture.width, -cTexture.texture.height}, (Vector2){0, 0}, BLANK);
             EndShaderMode();
         EndDrawing();
     }
 
     UnloadModel(grass);
     UnloadModel(ground);
-    UnloadShader(bloom);
-    UnloadShader(vignette);
     UnloadModel(firefly);
     UnloadModel(rain);
+    UnloadShader(cinematic);
     UnloadShader(skybox.materials[0].shader);
     UnloadTexture(skybox.materials[0].maps[MATERIAL_MAP_CUBEMAP].texture);
     UnloadModel(skybox);
