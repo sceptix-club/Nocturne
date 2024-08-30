@@ -34,24 +34,10 @@ void lightShaderUpdate(Camera camera, Shader lightShader)
         UpdateLightValues(lightShader, lights[0]);
 }
 
-Shader SetVignette()
+Shader Cinemtic()
 {
-    Shader vig_shader = LoadShader(0, "resources/shaders/glsl330/vignette.fs");
-    int rLoc = GetShaderLocation(vig_shader, "radius");
-    int blurLoc = GetShaderLocation(vig_shader, "blur");
-    int colLoc = GetShaderLocation(vig_shader, "color");
-    float radius = 0.2f;
-    float blur = 0.65f;
-    SetShaderValue(vig_shader, rLoc, &radius, SHADER_UNIFORM_FLOAT);
-    SetShaderValue(vig_shader, blurLoc, &blur, SHADER_UNIFORM_FLOAT);
-    SetShaderValue(vig_shader, colLoc, &vColor, SHADER_UNIFORM_VEC3);
-    return vig_shader;
-}
-
-Shader SetBloom()
-{
-    Shader bloom = LoadShader(0,TextFormat("resources/shaders/glsl%i/bloom.fs",GLSL_VERSION));
-    return bloom;
+    Shader cinematic = LoadShader(0,TextFormat("resources/shaders/glsl%i/cinematic.fs",GLSL_VERSION));
+    return cinematic;
 }
 
 #endif
