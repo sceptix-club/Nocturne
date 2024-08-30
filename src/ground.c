@@ -61,6 +61,6 @@ void DrawGround(Model ground, Vector3 cameraPosition) {
     UpdateGroundPatches(cameraPosition);
 
     for(int i=0; i<GROUND_COUNT; i++) {
-        DrawModel(ground,grounds[i].position, 1.0f,WHITE);
+        DrawModel(ground,grounds[i].position, 1.0f,BLACK);
     }
 }
