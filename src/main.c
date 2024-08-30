@@ -1,7 +1,6 @@
 #include <raylib.h>
 #include <rcamera.h>
 #include <stdio.h>
-
 #include "rlgl.h"
 #include "raymath.h"
 
@@ -73,6 +72,11 @@ int main(void)
     //Initialize Rain
     InitRain(camera.target);
 
+    //Empty texture for film grain
+    Shader vignette = SetVignette();
+    Shader bloom = SetBloom();
+    RenderTexture2D vTexture = LoadRenderTexture(GetMonitorWidth(GetCurrentMonitor()), GetMonitorHeight(GetCurrentMonitor())); // Vignette texture.
+    RenderTexture2D bTexture = LoadRenderTexture(GetMonitorWidth(GetCurrentMonitor()), GetMonitorHeight(GetCurrentMonitor())); // Bloom overlay.
     DisableCursor();
     SetTargetFPS(60);
 
@@ -87,8 +91,6 @@ int main(void)
         {
             case LOGO:
             {
-                // TODO: Update LOGO screen variables here!
-
                 framesCounter++;    // Count frames
 
                 // Wait for 2 seconds (120 frames) before jumping to TITLE screen
@@ -99,8 +101,6 @@ int main(void)
             } break;
             case TITLE:
             {
-                // TODO: Update TITLE screen variables here!
-
                 // Press enter to change to GAMEPLAY screen
                 if (IsKeyPressed(KEY_ENTER) || IsGestureDetected(GESTURE_TAP))
                 {
@@ -109,13 +109,10 @@ int main(void)
             } break;
             case GAMEPLAY:
             {
-                // TODO: Update GAMEPLAY screen variables here!
-
-                // Press enter to change to ENDING screen
+                // Game-specific updates can go here
             } break;
             default: break;
         }
-
 
         if (IsKeyPressed(KEY_F))
         {
@@ -131,7 +128,6 @@ int main(void)
             ResetActiveRainDrops();
         }
         previousRain = toggleRain;
-        // =====================================
 
         UpdateCameraPro(&camera,
         (Vector3){
@@ -150,63 +146,73 @@ int main(void)
         0.0f);                         // Move to target (zoom)
 
         lightShaderUpdate(camera, light);
+        
 
+        // Begin drawing
         BeginDrawing();
-            ClearBackground(BLACK);
-            switch(currentScreen)
+        BeginTextureMode(vTexture);
+        ClearBackground(BLACK);
+
+        BeginTextureMode(bTexture);
+        ClearBackground(BLACK);
+        switch(currentScreen)
+        {
+            case LOGO:
             {
-                case LOGO:
-                {
-                    // TODO: Draw LOGO screen here!
-                    DrawText("LOGO SCREEN", 20, 20, 40, LIGHTGRAY);
-                    DrawText("WAIT for 2 SECONDS...", 290, 220, 20, GRAY);
-
-                } break;
-                case TITLE:
-                {
-                    // TODO: Draw TITLE screen here!
-                    DrawRectangle(0, 0, screenWidth, screenHeight, GREEN);
-                    DrawText("TITLE SCREEN", 20, 20, 40, DARKGREEN);
-                    DrawText("PRESS ENTER to GAMEPLAY SCREEN", 120, 220, 20, DARKGREEN);
-
-                } break;
-                case GAMEPLAY:
-                {
-                    // TODO: Draw GAMEPLAY screen here!
-                    BeginMode3D(camera);
+                DrawText("LOGO SCREEN", 20, 20, 40, LIGHTGRAY);
+                DrawText("WAIT for 2 SECONDS...", 290, 220, 20, GRAY);
+            } break;
+            case TITLE:
+            {
+                DrawRectangle(0, 0, screenWidth, screenHeight, GREEN);
+                DrawText("TITLE SCREEN", 20, 20, 40, DARKGREEN);
+                DrawText("PRESS ENTER to GAMEPLAY SCREEN", 120, 220, 20, DARKGREEN);
+            } break;
+            case GAMEPLAY:
+            {
+                BeginMode3D(camera);
 
                 BeginShaderMode(light);
                 rlDisableBackfaceCulling();
-
                 rlDisableDepthMask();
-                   DrawModel(skybox, (Vector3){0,0,0},20.0f,BLACK);
+                DrawModel(skybox, (Vector3){0,0,0}, 20.0f, BLACK);
                 rlEnableDepthMask();
 
-                //Draw Grass
                 DrawGrass(grass, camera.target);
 
-                //Draw Rain
-                if (toggleRain) DrawRain(rain, camera.target);
-                else ResetActiveRainDrops();
-                
-                rlEnableBackfaceCulling();     
-                //Draw Ground with backface culling
-                DrawGround(ground, camera.target);
+                if (toggleRain) {
+                    DrawRain(rain, camera.target);
+                } else {
+                    ResetActiveRainDrops();
+                }
 
-                //Draw Fireflies
+                rlEnableBackfaceCulling();     
+                DrawGround(ground, camera.target);
                 DrawFireflies(firefly, camera.target);
-                DrawModel(rubble,Vector3Zero(),3.0f,RAYWHITE);
+                DrawModel(rubble, Vector3Zero(), 3.0f, RAYWHITE);
+
+                EndMode3D();
+
+            } break;
+            default: break;
+        }
+            EndTextureMode();
+            EndTextureMode();
+
+            BeginShaderMode(vignette);
+            DrawTextureRec(vTexture.texture, (Rectangle){0, 0, vTexture.texture.width, -vTexture.texture.height}, (Vector2){0, 0}, BLANK);
             EndShaderMode();
 
-            EndMode3D();
-
-                } break;
-                default: break;
-            }
+            BeginShaderMode(bloom);
+            DrawTextureRec(bTexture.texture, (Rectangle){0, 0, bTexture.texture.width, -bTexture.texture.height}, (Vector2){0, 0}, BLANK);
+            EndShaderMode();
         EndDrawing();
     }
+
     UnloadModel(grass);
     UnloadModel(ground);
+    UnloadShader(bloom);
+    UnloadShader(vignette);
     UnloadModel(firefly);
     UnloadModel(rain);
     UnloadShader(skybox.materials[0].shader);
