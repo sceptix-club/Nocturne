@@ -7,6 +7,7 @@
 #include "rlights.h"
 
 Color background_color = (Color){255, 255, 185, 100};
+Color vColor = (Color){14, 13, 14, 1};
 
 Light lights[MAX_LIGHTS] = {0};
 Shader SetLights()
@@ -31,6 +32,26 @@ void lightShaderUpdate(Camera camera, Shader lightShader)
         Vector3 light_head = (Vector3){0+camera.target.x, 5+camera.target.y, 8+camera.target.z};
         lights[0].position = light_head;
         UpdateLightValues(lightShader, lights[0]);
+}
+
+Shader SetVignette()
+{
+    Shader vig_shader = LoadShader(0, "resources/shaders/glsl330/vignette.fs");
+    int rLoc = GetShaderLocation(vig_shader, "radius");
+    int blurLoc = GetShaderLocation(vig_shader, "blur");
+    int colLoc = GetShaderLocation(vig_shader, "color");
+    float radius = 0.2f;
+    float blur = 0.65f;
+    SetShaderValue(vig_shader, rLoc, &radius, SHADER_UNIFORM_FLOAT);
+    SetShaderValue(vig_shader, blurLoc, &blur, SHADER_UNIFORM_FLOAT);
+    SetShaderValue(vig_shader, colLoc, &vColor, SHADER_UNIFORM_VEC3);
+    return vig_shader;
+}
+
+Shader SetBloom()
+{
+    Shader bloom = LoadShader(0,TextFormat("resources/shaders/glsl%i/bloom.fs",GLSL_VERSION));
+    return bloom;
 }
 
 #endif
