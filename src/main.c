@@ -34,8 +34,8 @@ int main(void)
     int framesCounter = 0;
 
     Camera camera = {0};
-    camera.position = (Vector3){ 0.0f, 4.5f, 0.0f };
-    camera.target = (Vector3){ 0.185f, 1.0f, -1.0f };
+    camera.position = (Vector3){ 0.0f, 5.0f, 0.0f };
+    camera.target = (Vector3){ 5.0f, 5.0f, 0.0f };
     camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };
     camera.fovy = 75.0f;
     camera.projection = CAMERA_PERSPECTIVE;
@@ -83,12 +83,14 @@ int main(void)
 
     // --------------------------------------------------------------------------------------
 
-    while (!WindowShouldClose()) 
+    while (!WindowShouldClose()) // Gameloop
     {
         switch(currentScreen)
         {
             case LOGO:
             {
+                // TODO: Update LOGO screen variables here!
+
                 framesCounter++;    // Count frames
 
                 // Wait for 2 seconds (120 frames) before jumping to TITLE screen
@@ -99,6 +101,8 @@ int main(void)
             } break;
             case TITLE:
             {
+                // TODO: Update TITLE screen variables here!
+
                 // Press enter to change to GAMEPLAY screen
                 if (IsKeyPressed(KEY_ENTER) || IsGestureDetected(GESTURE_TAP))
                 {
@@ -107,7 +111,9 @@ int main(void)
             } break;
             case GAMEPLAY:
             {
-                // Game-specific updates can go here
+                // TODO: Update GAMEPLAY screen variables here!
+
+                // Press enter to change to ENDING screen
             } break;
             default: break;
         }
