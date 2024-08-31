@@ -1,7 +1,6 @@
 #include <raylib.h>
 #include <rcamera.h>
 #include <stdio.h>
-
 #include "rlgl.h"
 #include "raymath.h"
 
@@ -18,7 +17,9 @@
 #include "world/ground.h"
 #include "world/grass.h"
 #include "world/firefly.h"
+#include "world/props.h"
 #include "world/rain.h"
+#include "stdio.h"
 
 typedef enum GameScreen { LOGO = 0, TITLE, GAMEPLAY} GameScreen;
 
@@ -36,7 +37,7 @@ int main(void)
     camera.position = (Vector3){ 0.0f, 5.0f, 0.0f };
     camera.target = (Vector3){ 5.0f, 5.0f, 0.0f };
     camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };
-    camera.fovy = 85.0f;
+    camera.fovy = 75.0f;
     camera.projection = CAMERA_PERSPECTIVE;
 
     // Model ground = Ground();
@@ -57,6 +58,8 @@ int main(void)
     // rain model
     Model rain = RainModel();
 
+    Model rubble = Tree(light);
+
     //Initialize grass
     InitGrass(camera.target);
 
@@ -69,6 +72,9 @@ int main(void)
     //Initialize Rain
     InitRain(camera.target);
 
+    //Empty texture for cinamtic shader
+    Shader cinematic = Cinemtic();
+    RenderTexture2D cTexture = LoadRenderTexture(GetMonitorWidth(GetCurrentMonitor()), GetMonitorHeight(GetCurrentMonitor())); // Bloom overlay.
     DisableCursor();
     SetTargetFPS(60);
 
@@ -125,7 +131,6 @@ int main(void)
         if (!toggleRain && previousRain) {
             ResetActiveRainDrops();
         }
-
         previousRain = toggleRain;
 
         UpdateCameraPro(&camera,
@@ -145,62 +150,57 @@ int main(void)
         0.0f);                         // Move to target (zoom)
 
         lightShaderUpdate(camera, light);
+        
 
-        BeginDrawing();
-            ClearBackground(BLACK);
-
-            switch(currentScreen) 
+        // Begin drawing
+        BeginTextureMode(cTexture);
+        ClearBackground(BLACK);
+        switch(currentScreen)
+        {
+            case LOGO:
             {
-                case LOGO:
-                {
-                    // TODO: Draw LOGO screen here!
-                    DrawText("LOGO SCREEN", 20, 20, 40, LIGHTGRAY);
-                    DrawText("WAIT for 2 SECONDS...", 290, 220, 20, GRAY);
+                DrawText("LOGO SCREEN", 20, 20, 40, LIGHTGRAY);
+                DrawText("WAIT for 2 SECONDS...", 290, 220, 20, GRAY);
+            } break;
+            case TITLE:
+            {
+                DrawRectangle(0, 0, screenWidth, screenHeight, GREEN);
+                DrawText("TITLE SCREEN", 20, 20, 40, DARKGREEN);
+                DrawText("PRESS ENTER to GAMEPLAY SCREEN", 120, 220, 20, DARKGREEN);
+            } break;
+            case GAMEPLAY:
+            {
+                BeginMode3D(camera);
 
-                } break;
-                case TITLE:
-                {
-                    // TODO: Draw TITLE screen here!
-                    DrawRectangle(0, 0, screenWidth, screenHeight, GREEN);
-                    DrawText("TITLE SCREEN", 20, 20, 40, DARKGREEN);
-                    DrawText("PRESS ENTER to GAMEPLAY SCREEN", 120, 220, 20, DARKGREEN);
+                BeginShaderMode(light);
+                rlDisableBackfaceCulling();
+                rlDisableDepthMask();
+                DrawModel(skybox, (Vector3){0,0,0}, 20.0f, BLACK);
+                rlEnableDepthMask();
 
-                } break;
-                case GAMEPLAY:
-                {
-                    // TODO: Draw GAMEPLAY screen here!
-                    BeginMode3D(camera);
+                DrawGrass(grass, camera.target);
 
-                        BeginShaderMode(light);
-                        rlDisableBackfaceCulling();
+                if (toggleRain) {
+                    DrawRain(rain, camera.target);
+                } else {
+                    ResetActiveRainDrops();
+                }
 
-                        rlDisableDepthMask();
-                        DrawModel(skybox, (Vector3){0,0,0},20.0f,BLACK);
-                        rlEnableDepthMask();
+                rlEnableBackfaceCulling();     
+                DrawGround(ground, camera.target);
+                DrawFireflies(firefly, camera.target);
+                DrawModel(rubble, Vector3Zero(), 3.0f, RAYWHITE);
 
-                        //Draw Grass
-                        DrawGrass(grass, camera.target);
+                EndMode3D();
 
-                        //Draw Rain
-                        if (toggleRain) {
-                            DrawRain(rain, camera.target);
-                        } else {
-                            ResetActiveRainDrops();
-                        }
-                        
-                        rlEnableBackfaceCulling();     
-                        //Draw Ground with backface culling
-                        DrawGround(ground, camera.target);
+            } break;
+            default: break;
+        }
+            EndTextureMode();
 
-                        //Draw Fireflies
-                        DrawFireflies(firefly, camera.target);
-
-                    EndMode3D();
-
-                } break;
-                default: break;
-            }
-
+            BeginShaderMode(cinematic);
+            DrawTextureRec(cTexture.texture, (Rectangle){0, 0, cTexture.texture.width, -cTexture.texture.height}, (Vector2){0, 0}, BLANK);
+            EndShaderMode();
         EndDrawing();
     }
 
@@ -208,6 +208,7 @@ int main(void)
     UnloadModel(ground);
     UnloadModel(firefly);
     UnloadModel(rain);
+    UnloadShader(cinematic);
     UnloadShader(skybox.materials[0].shader);
     UnloadTexture(skybox.materials[0].maps[MATERIAL_MAP_CUBEMAP].texture);
     UnloadModel(skybox);
