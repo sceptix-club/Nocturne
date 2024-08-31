@@ -16,7 +16,7 @@ Model SkyBox(){
     SetShaderValue(skybox.materials[0].shader, GetShaderLocation(skybox.materials[0].shader,"doGamma"), (int[1]){0}, SHADER_UNIFORM_INT);
     SetShaderValue(skybox.materials[0].shader, GetShaderLocation(skybox.materials[0].shader,"vflipped"), (int[1]){1}, SHADER_UNIFORM_INT);
 
-    Image img = LoadImage("assets/skybox_moon.png");
+    Image img = LoadImage("assets/skyboxMoon2.png");
     TextureCubemap cubeMaptexture = LoadTextureCubemap(img, CUBEMAP_LAYOUT_AUTO_DETECT);
     UnloadImage(img);
     skybox.materials[0].maps[MATERIAL_MAP_CUBEMAP].texture = cubeMaptexture;
