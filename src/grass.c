@@ -2,7 +2,7 @@
 
 #define GRASSBLADE_COUNT 8000
 #define PATCH_SIZE 50.0f
-#define ANIM_SCALE 10.0f
+#define ANIM_SCALE 8.0f
 
 typedef struct {
     Vector3 position;
@@ -21,7 +21,7 @@ static inline float Noise(float x, float y) {
 }
 
 Model GrassBladeModel(Shader lightShader) {
-    Model grass = LoadModel("assets/grass.obj");
+    Model grass = LoadModel("assets/models/grass.obj");
     grass.materials[0].shader = lightShader;
     return grass;
 }
