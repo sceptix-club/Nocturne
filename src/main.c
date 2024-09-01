@@ -187,7 +187,12 @@ int main(void)
                 rlEnableDepthMask();
 
                 // Random objects
-                DrawObjects(object);
+                bool near = DrawObjects(object, &camera);
+
+                if (near) {
+                    DrawText("Near", 20, 20, 14, WHITE);
+                    puts("Near");
+                }
 
                 //Draw Grass
                 DrawGrass(grass, camera.target);
