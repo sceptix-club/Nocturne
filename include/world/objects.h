@@ -3,6 +3,6 @@
 
 void InitObjects();
 Model ObjectModel();
-void DrawObjects();
+bool DrawObjects();
 
 #endif
