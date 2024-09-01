@@ -35,7 +35,7 @@ void lightShaderUpdate(Camera camera, Shader lightShader)
         UpdateLightValues(lightShader, lights[0]);
 }
 
-Shader Cinemtic()
+Shader Cinematic()
 {
     Shader cinematic = LoadShader(0,TextFormat("resources/shaders/glsl%i/cinematic.fs",GLSL_VERSION));
     return cinematic;

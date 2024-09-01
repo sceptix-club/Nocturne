@@ -75,7 +75,7 @@ int main(void)
     InitRain(camera.target);
 
     //Empty texture for cinamtic shader
-    Shader cinematic = Cinemtic();
+    Shader cinematic = Cinematic();
     RenderTexture2D cTexture = LoadRenderTexture(GetMonitorWidth(GetCurrentMonitor()), GetMonitorHeight(GetCurrentMonitor())); // Bloom overlay.
     Texture2D pause_screen;
     Image screen;
