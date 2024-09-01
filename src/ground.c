@@ -15,10 +15,8 @@ Model GroundModel(Shader lightShader) {
     Mesh plane = GenMeshPlane(GROUND_SIZE,GROUND_SIZE,2,2);
     Model ground = LoadModelFromMesh(plane);
     Texture2D groundTex = LoadTexture("assets/groundTex2.png");
-    Texture2D groundTex_rough = LoadTexture("assets/groundTex_rough.png");
     ground.materials[0].shader = lightShader;
     ground.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture =  groundTex;
-    ground.materials[0].maps[MATERIAL_MAP_ROUGHNESS].texture =  groundTex_rough;
     
 
     return ground;
