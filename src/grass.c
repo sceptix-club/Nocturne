@@ -14,13 +14,14 @@ typedef struct {
 
 GrassBlade grassBlades[GRASSBLADE_COUNT];
 double time_init = 0.0f;
+float grass_dist,player_dist ;
 
 static inline float Noise(float x, float y) {
     return sinf(x * 0.1f) * cosf(y * 0.1f) * 5.0f;
 }
 
 Model GrassBladeModel(Shader lightShader) {
-    Model grass = LoadModel("assets/grass.obj");
+    Model grass = LoadModel("assets/models/grass.obj");
     grass.materials[0].shader = lightShader;
     return grass;
 }
