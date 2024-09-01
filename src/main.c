@@ -21,6 +21,7 @@
 #include "world/props.h"
 #include "world/rain.h"
 #include "utils/pause.h"
+#include "utils/dialogues.h"
 #include "stdio.h"
 
 typedef enum GameScreen { LOGO = 0, TITLE, GAMEPLAY, PAUSE} GameScreen;
@@ -74,11 +75,14 @@ int main(void)
     //Initialize Rain
     InitRain(camera.target);
 
+    InitAudioDevice();
+
     //Empty texture for cinamtic shader
     Shader cinematic = Cinemtic();
     RenderTexture2D cTexture = LoadRenderTexture(GetMonitorWidth(GetCurrentMonitor()), GetMonitorHeight(GetCurrentMonitor())); // Bloom overlay.
     Texture2D pause_screen;
     Image screen;
+    Music firstAudio = LoadMusicStream("assets/dialogues/testAudio.mp3");
     DisableCursor();
     SetTargetFPS(60);
 
@@ -89,6 +93,7 @@ int main(void)
 
     while (!WindowShouldClose()) // Gameloop
     {
+        UpdateMusicStream(firstAudio);
         switch(currentScreen)
         {
             case LOGO:
@@ -108,17 +113,7 @@ int main(void)
             } break;
             case GAMEPLAY:
             {
-                if(IsKeyPressed(KEY_P))
-                {
-                    GetCurrentScreen();
-                    currentScreen = PAUSE;
-                }
-            } break;
-            case PAUSE:
-            {
-                    DrawPause();
-                    if(IsKeyPressed(KEY_L))
-                        currentScreen = GAMEPLAY;
+                
             } break;
             default: break;
         }
@@ -197,8 +192,21 @@ int main(void)
                 DrawModel(rubble, Vector3Zero(), 3.0f, RAYWHITE);
 
                 EndMode3D();
+                
+                if(IsKeyPressed(KEY_P))
+                {
+                    GetCurrentScreen();
+                    currentScreen = PAUSE;
+                }
 
             } break;
+            case PAUSE:
+            {
+                DrawPause();
+                if(IsKeyPressed(KEY_L))
+                    currentScreen = GAMEPLAY;
+            }
+            break;
             default: break;
         }
             EndTextureMode();
@@ -206,6 +214,9 @@ int main(void)
             BeginShaderMode(cinematic);
             DrawTextureRec(cTexture.texture, (Rectangle){0, 0, cTexture.texture.width, -cTexture.texture.height}, (Vector2){0, 0}, BLANK);
             EndShaderMode();
+
+            DrawSubtitle(firstAudio, true, firstDialogue, sizeof(firstDialogue) / sizeof(firstDialogue[0]));
+
         EndDrawing();
     }
 
