@@ -13,8 +13,8 @@ void GetCurrentScreen()
 {
     // Capture the screen
     imOrigin = LoadImageFromScreen(); // Correct function name, capture the current screen image
-    ImageFormat(&imOrigin, PIXELFORMAT_UNCOMPRESSED_GRAYSCALE); // Convert to the required format
-    ImageBlurGaussian(&imOrigin,10);
+    ImageFormat(&imOrigin, PIXELFORMAT_UNCOMPRESSED_R8G8B8A8); // Convert to the required format
+    ImageBlurGaussian(&imOrigin,3);
     screen = LoadTextureFromImage(imOrigin);
     screen_size.x = 10;
     screen_size.y = 10;
@@ -24,11 +24,8 @@ void GetCurrentScreen()
 
 void DrawPause()
 {
-    BeginDrawing();
-        ClearBackground(BLACK);
         DrawTextureRec(screen,screen_size,(Vector2){0,0},WHITE);
         DrawText("GAME PAUSED",10,10,50,WHITE);
-    EndDrawing();
 }
 
 #endif
