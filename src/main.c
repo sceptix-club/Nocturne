@@ -1,3 +1,4 @@
+
 #include <raylib.h>
 #include <rcamera.h>
 #include <stdio.h>
@@ -19,9 +20,10 @@
 #include "world/firefly.h"
 #include "world/props.h"
 #include "world/rain.h"
+#include "utils/pause.h"
 #include "stdio.h"
 
-typedef enum GameScreen { LOGO = 0, TITLE, GAMEPLAY} GameScreen;
+typedef enum GameScreen { LOGO = 0, TITLE, GAMEPLAY, PAUSE} GameScreen;
 
 int main(void)
 {
@@ -75,6 +77,8 @@ int main(void)
     //Empty texture for cinamtic shader
     Shader cinematic = Cinemtic();
     RenderTexture2D cTexture = LoadRenderTexture(GetMonitorWidth(GetCurrentMonitor()), GetMonitorHeight(GetCurrentMonitor())); // Bloom overlay.
+    Texture2D pause_screen;
+    Image screen;
     DisableCursor();
     SetTargetFPS(60);
 
@@ -89,11 +93,7 @@ int main(void)
         {
             case LOGO:
             {
-                // TODO: Update LOGO screen variables here!
-
                 framesCounter++;    // Count frames
-
-                // Wait for 2 seconds (120 frames) before jumping to TITLE screen
                 if (framesCounter > 120)
                 {
                     currentScreen = TITLE;
@@ -101,9 +101,6 @@ int main(void)
             } break;
             case TITLE:
             {
-                // TODO: Update TITLE screen variables here!
-
-                // Press enter to change to GAMEPLAY screen
                 if (IsKeyPressed(KEY_ENTER) || IsGestureDetected(GESTURE_TAP))
                 {
                     currentScreen = GAMEPLAY;
@@ -111,9 +108,17 @@ int main(void)
             } break;
             case GAMEPLAY:
             {
-                // TODO: Update GAMEPLAY screen variables here!
-
-                // Press enter to change to ENDING screen
+                if(IsKeyPressed(KEY_P))
+                {
+                    GetCurrentScreen();
+                    currentScreen = PAUSE;
+                }
+            } break;
+            case PAUSE:
+            {
+                    DrawPause();
+                    if(IsKeyPressed(KEY_L))
+                        currentScreen = GAMEPLAY;
             } break;
             default: break;
         }
@@ -125,7 +130,7 @@ int main(void)
 
         if (IsKeyPressed(KEY_R)) {
             toggleRain = !toggleRain;
-        }
+        };
 
         // Toggle rain logic to reset rain drops
         if (!toggleRain && previousRain) {
@@ -217,3 +222,4 @@ int main(void)
 
     return 0;
 }
+
