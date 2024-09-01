@@ -6,7 +6,7 @@
 
 #include "rlights.h"
 
-Color background_color = (Color){255, 255, 185, 100};
+// Color background_color = (Color){255, 255, 185, 100};
 Color vColor = (Color){14, 13, 14, 1};
 
 Light lights[MAX_LIGHTS] = {0};
@@ -27,9 +27,10 @@ Shader SetLights()
 
 void lightShaderUpdate(Camera camera, Shader lightShader)
 {
-        float cameraPos[3] = { camera.position.x, camera.position.y, camera.position.z };
+        float cameraPos[3] = { 4+camera.position.x, camera.position.y, 4+camera.position.z };
         SetShaderValue(lightShader, lightShader.locs[SHADER_LOC_VECTOR_VIEW], cameraPos, SHADER_UNIFORM_VEC3);
-        Vector3 light_head = (Vector3){0+camera.target.x, 5+camera.target.y, 8+camera.target.z};
+        //Slight shift for better view
+        Vector3 light_head = (Vector3){2+camera.target.x, 2+camera.target.y, 2+camera.target.z};
         lights[0].position = light_head;
         UpdateLightValues(lightShader, lights[0]);
 }
