@@ -3,6 +3,7 @@
 #define GRASSBLADE_COUNT 8000
 #define PATCH_SIZE 50.0f
 #define ANIM_SCALE 8.0f
+#define NOISE_SCALE 0.2f
 
 typedef struct {
     Vector3 position;
@@ -14,10 +15,16 @@ typedef struct {
 
 GrassBlade grassBlades[GRASSBLADE_COUNT];
 double time_init = 0.0f;
-float grass_dist,player_dist ;
 
-static inline float Noise(float x, float y) {
-    return sinf(x * 0.1f) * cosf(y * 0.1f) * 5.0f;
+static inline float Noise(float x, float y){
+    return sinf(x * NOISE_SCALE) * cosf(y * NOISE_SCALE) * 5.0f;
+}
+ 
+// Check if the position is in a no grass zone
+bool NoGrassZone(Vector3 position) {
+    float noise = Noise(position.x, position.z);
+    float normalizedNoise = (noise + 1.0f) / 2.0f;
+    return normalizedNoise < 0.55f;
 }
 
 Model GrassBladeModel(Shader lightShader) {
@@ -26,10 +33,13 @@ Model GrassBladeModel(Shader lightShader) {
     return grass;
 }
 
+// Initialize grass blades with random positions and scales
 void InitGrass(Vector3 cameraPosition) {
-    srand(time(NULL)); // Seed for random number generation
-    // Initialize grass blades with random positions and scales
-    for (int i = 0; i < GRASSBLADE_COUNT; i++) {
+    srand((unsigned int)time(NULL));
+    
+    int validGrassBlades = 0;
+
+    while (validGrassBlades < GRASSBLADE_COUNT) {
         float angle = GetRandomValue(0, 360) * DEG2RAD;
         float distance = GetRandomValue(0, (int)(PATCH_SIZE * 10)) / 10.0f;
 
@@ -37,15 +47,16 @@ void InitGrass(Vector3 cameraPosition) {
         float z = cameraPosition.z + distance * sinf(angle);
         float noise = Noise(x, z);
 
-        grassBlades[i].position.x = x + noise;
-        grassBlades[i].position.z = z + noise;
-        grassBlades[i].position.y = 0.0f;                       // Initial height
-        grassBlades[i].scale = GetRandomValue(5,15); // Random scale 1.0 between  and 15.0
-        grassBlades[i].rotation = GetRandomValue(10, 270);
-        // Calculated here so that DrawGrassNew() doesn't have to call the
-        // trigonometric functions NUM_GRASS_BLADES times
-        grassBlades[i].animationOffsetSin = sinf(GetRandomValue(0, 30)) * DEG2RAD; // SIN(ANIM)
-        grassBlades[i].animationOffsetCos = cosf(GetRandomValue(0, 30)) * DEG2RAD; // COS(ANIM)
+        Vector3 position = {x + noise, 0.0f, z + noise};
+
+        if (!NoGrassZone(position)) {
+            grassBlades[validGrassBlades].position = position;
+            grassBlades[validGrassBlades].scale = GetRandomValue(5, 15); // Random scale between 5.0 and 15.0
+            grassBlades[validGrassBlades].rotation = GetRandomValue(10, 270);
+            grassBlades[validGrassBlades].animationOffsetSin = sinf(GetRandomValue(0, 30)) * DEG2RAD; // SIN(ANIM)
+            grassBlades[validGrassBlades].animationOffsetCos = cosf(GetRandomValue(0, 30)) * DEG2RAD; // COS(ANIM)
+            validGrassBlades++;
+        }
     }
 }
 
@@ -70,7 +81,6 @@ void DrawGrass(Model grass, Vector3 cameraPosition) {
 
     time_init += GetFrameTime();
 
-    // SIN(BEND + ANIM) = SIN(BEND) * COS(ANIM) + COS(BEND) + SIN(ANIM)
     float sinBendFactor = sinf(time_init * 2.0f) * DEG2RAD * ANIM_SCALE;
     float cosBendFactor = cosf(time_init * 2.0f) * DEG2RAD * ANIM_SCALE;
 
