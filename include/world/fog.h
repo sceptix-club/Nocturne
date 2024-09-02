@@ -4,6 +4,6 @@
 #include "raylib.h"
 
 Shader FogShader();
-void fogShaderUpdate(Camera camera, Shader shader);
+void UpdateFogShader(Camera camera, Shader shader);
 
 #endif // FOG_H
