@@ -14,6 +14,7 @@
 #endif
 
 #include "shaders/lights.h"
+#include "world/fog.h"
 #include "world/skybox.h"
 #include "world/ground.h"
 #include "world/grass.h"
@@ -47,6 +48,9 @@ int main(void)
 
     // Light above camera
     Shader light = SetLights();
+
+    // Fog shader
+    Shader fog = FogShader();
 
     // display cam position
     Model ground = GroundModel(light);
@@ -155,6 +159,7 @@ int main(void)
         0.0f);                         // Move to target (zoom)
 
         lightShaderUpdate(camera, light);
+        fogShaderUpdate(camera, fog);
         
 
         // Begin drawing
@@ -209,6 +214,8 @@ int main(void)
         EndDrawing();
     }
 
+    UnloadShader(light);
+    UnloadShader(fog);
     UnloadModel(grass);
     UnloadModel(ground);
     UnloadModel(firefly);
