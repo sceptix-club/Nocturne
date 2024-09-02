@@ -2,8 +2,8 @@
 #include <raylib.h>
 #include <rcamera.h>
 #include <stdio.h>
-#include "rlgl.h"
-#include "raymath.h"
+#include <rlgl.h>
+#include <raymath.h>
 
 #define RLIGHTS_IMPLEMENTATION
 
@@ -14,6 +14,7 @@
 #endif
 
 #include "shaders/lights.h"
+#include "shaders/rlights.h"
 #include "world/skybox.h"
 #include "world/ground.h"
 #include "world/grass.h"
@@ -21,7 +22,6 @@
 #include "world/props.h"
 #include "world/rain.h"
 #include "utils/pause.h"
-#include "stdio.h"
 
 typedef enum GameScreen { LOGO = 0, TITLE, GAMEPLAY, PAUSE} GameScreen;
 
@@ -75,7 +75,7 @@ int main(void)
     InitRain(camera.target);
 
     //Empty texture for cinamtic shader
-    Shader cinematic = Cinemtic();
+    Shader cinematic = Cinematic();
     RenderTexture2D cTexture = LoadRenderTexture(GetMonitorWidth(GetCurrentMonitor()), GetMonitorHeight(GetCurrentMonitor())); // Bloom overlay.
     Texture2D pause_screen;
     Image screen;
@@ -154,8 +154,7 @@ int main(void)
         },
         0.0f);                         // Move to target (zoom)
 
-        lightShaderUpdate(camera, light);
-        
+        UpdateLightShader(camera, light);
 
         // Begin drawing
         BeginTextureMode(cTexture);
@@ -209,6 +208,7 @@ int main(void)
         EndDrawing();
     }
 
+    UnloadShader(light);
     UnloadModel(grass);
     UnloadModel(ground);
     UnloadModel(firefly);
