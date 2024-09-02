@@ -1,18 +1,5 @@
 #include "world/grass.h"
 
-#define GRASSBLADE_COUNT 8000
-#define PATCH_SIZE 50.0f
-#define ANIM_SCALE 8.0f
-#define NOISE_SCALE 0.2f
-
-typedef struct {
-    Vector3 position;
-    float scale;
-    float rotation;
-    float animationOffsetSin;
-    float animationOffsetCos;
-} GrassBlade;
-
 GrassBlade grassBlades[GRASSBLADE_COUNT];
 double time_init = 0.0f;
 
@@ -88,13 +75,17 @@ void DrawGrass(Model grass, Vector3 cameraPosition) {
         const float bendFactor = ((sinBendFactor * grassBlades[i].animationOffsetCos)
                                + (cosBendFactor * grassBlades[i].animationOffsetSin))
                                * ANIM_SCALE;
-        DrawModelEx(
-            grass,
-            grassBlades[i].position,
-            (Vector3){1.0f, 0.0f, 0.0f},
-            (grassBlades[i].rotation * bendFactor),
-            (Vector3){grassBlades[i].scale, grassBlades[i].scale, grassBlades[i].scale},
-            DARKGRAY
-        );
+
+        if(grassBlades[i].active)
+        {
+            DrawModelEx(
+                grass,
+                grassBlades[i].position,
+                (Vector3){1.0f, 0.0f, 0.0f},
+                (grassBlades[i].rotation * bendFactor),
+                (Vector3){grassBlades[i].scale, grassBlades[i].scale, grassBlades[i].scale},
+                DARKGRAY
+            );
+        }
     }
 }
