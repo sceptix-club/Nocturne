@@ -1,20 +1,7 @@
 #include "world/grass.h"
 
-#define GRASSBLADE_COUNT 8000
-#define PATCH_SIZE 50.0f
-#define ANIM_SCALE 8.0f
-
-typedef struct {
-    Vector3 position;
-    float scale;
-    float rotation;
-    float animationOffsetSin;
-    float animationOffsetCos;
-} GrassBlade;
-
 GrassBlade grassBlades[GRASSBLADE_COUNT];
 double time_init = 0.0f;
-float grass_dist,player_dist ;
 
 static inline float Noise(float x, float y) {
     return sinf(x * 0.1f) * cosf(y * 0.1f) * 5.0f;
@@ -46,6 +33,7 @@ void InitGrass(Vector3 cameraPosition) {
         // trigonometric functions NUM_GRASS_BLADES times
         grassBlades[i].animationOffsetSin = sinf(GetRandomValue(0, 30)) * DEG2RAD; // SIN(ANIM)
         grassBlades[i].animationOffsetCos = cosf(GetRandomValue(0, 30)) * DEG2RAD; // COS(ANIM)
+        grassBlades[i].active = true;
     }
 }
 
@@ -78,13 +66,17 @@ void DrawGrass(Model grass, Vector3 cameraPosition) {
         const float bendFactor = ((sinBendFactor * grassBlades[i].animationOffsetCos)
                                + (cosBendFactor * grassBlades[i].animationOffsetSin))
                                * ANIM_SCALE;
-        DrawModelEx(
-            grass,
-            grassBlades[i].position,
-            (Vector3){1.0f, 0.0f, 0.0f},
-            (grassBlades[i].rotation * bendFactor),
-            (Vector3){grassBlades[i].scale, grassBlades[i].scale, grassBlades[i].scale},
-            DARKGRAY
-        );
+
+        if(grassBlades[i].active)
+        {
+            DrawModelEx(
+                grass,
+                grassBlades[i].position,
+                (Vector3){1.0f, 0.0f, 0.0f},
+                (grassBlades[i].rotation * bendFactor),
+                (Vector3){grassBlades[i].scale, grassBlades[i].scale, grassBlades[i].scale},
+                DARKGRAY
+            );
+        }
     }
 }

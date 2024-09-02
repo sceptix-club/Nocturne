@@ -61,7 +61,7 @@ int main(void)
     // rain model
     Model rain = RainModel();
 
-    Model rubble = Tree(light);
+    Model rubble = Bone(light);
 
     //Initialize grass
     InitGrass(camera.target);
@@ -189,7 +189,7 @@ int main(void)
                 rlEnableBackfaceCulling();     
                 DrawGround(ground, camera.target);
                 DrawFireflies(firefly, camera.target);
-                DrawModel(rubble, Vector3Zero(), 3.0f, RAYWHITE);
+                DrawBone(true,Vector3Zero());
 
                 EndMode3D();
                 
