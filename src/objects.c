@@ -4,10 +4,11 @@
 #define MIN_SPAWN_RADIUS 25
 #define DISTANCE_THRESHOLD 10.0f
 #define OBJECT_COUNT 4
-#define OBJECT_Y 10.0f
+#define OBJECT_Y 2.0f
 
 typedef struct {
     Vector3 position;
+    float rotation;
     bool visible;
     bool isFound;
 } Object;
@@ -16,11 +17,16 @@ Object objects[OBJECT_COUNT];
 bool allObjectsFound = false;
 
 Model ObjectModel(Shader lightShader) {
-    Model object = LoadModel("assets/models/sphere.obj");
+    // Model object = LoadModel("assets/models/sphere.obj");
 
-    Material material = LoadMaterialDefault();
-    material.maps[MATERIAL_MAP_DIFFUSE].color = (Color){ 255, 0, 0, 255 };
-    object.materials[0] = material;
+    // Material material = LoadMaterialDefault();
+    // material.maps[MATERIAL_MAP_DIFFUSE].color = (Color){ 255, 0, 0, 255 };
+    // object.materials[0] = material;
+ 
+    // 3D cube for now
+    Mesh cube = GenMeshCube(3.0f, 3.0f, 3.0f);
+    Model object = LoadModelFromMesh(cube);
+    object.materials[0].shader = lightShader;
 
     return object;
 }
@@ -38,13 +44,14 @@ void InitObjects() {
         float z = offsetZ + (float)GetRandomValue(minQuadrant, mapQuadrant - minQuadrant);
 
         objects[i].position = (Vector3){ x, OBJECT_Y, z };
+        objects[i].rotation = 0.0f;
         objects[i].visible = true;
     }
 }
 
 void AnimateObject(Object *objects) {
     float time = GetTime();
-    float moveUpHeight = 10.0f;
+    float moveUpHeight = 4.0f;
     float moveUpSpeed = 0.05f;
     
     float height = OBJECT_Y + moveUpHeight;
@@ -71,11 +78,12 @@ void UpdateObjects(Camera *camera) {
             if (!objects[i].isFound) {
                 allObjectsFound = false;
             }
+
+            if (objects[i].isFound) {
+                AnimateObject(&objects[i]);
+            }
         }
 
-        if (objects[i].isFound) {
-            AnimateObject(&objects[i]);
-        }
     }
 }
 
@@ -84,7 +92,12 @@ void DrawObjects(Model object, Camera *camera) {
 
     for (int i = 0; i < OBJECT_COUNT; i++) {
         if (objects[i].visible) {
-            DrawModel(object, objects[i].position, 10.0f, WHITE);           
+            DrawModelEx(object,
+                        objects[i].position,
+                        Vector3One(),
+                        objects[i].rotation,
+                        Vector3One(),
+                        WHITE);
         }
     }
 }
