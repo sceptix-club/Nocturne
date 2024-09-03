@@ -1,6 +1,6 @@
 #include "world/objects.h"
 
-#define MAP_SIZE 25 // All four hidden objects will be within a circle of this radius
+#define MAP_SIZE 25 // Small map size for now
 #define MIN_SPAWN_RADIUS 25
 #define DISTANCE_THRESHOLD 10.0f
 #define OBJECT_COUNT 4
@@ -19,12 +19,6 @@ Object objects[OBJECT_COUNT];
 bool allObjectsFound = false;
 
 Model ObjectModel(Shader lightShader) {
-    // Model object = LoadModel("assets/models/sphere.obj");
-
-    // Material material = LoadMaterialDefault();
-    // material.maps[MATERIAL_MAP_DIFFUSE].color = (Color){ 255, 0, 0, 255 };
-    // object.materials[0] = material;
- 
     // 3D cube for now
     Mesh cube = GenMeshCube(3.0f, 3.0f, 3.0f);
     Model object = LoadModelFromMesh(cube);
@@ -39,29 +33,31 @@ void InitObjects() {
     float minQuadrant = MIN_SPAWN_RADIUS / 2.0f;
 
     for (int i = 0; i < OBJECT_COUNT; i++) {
-        float offsetX = ((i & 2) == 0) ? -mapQuadrant : mapQuadrant;
-        float offsetZ = ((i & 1) == 0) ? -mapQuadrant : mapQuadrant;
+        float offsetX = (i & 2) ? mapQuadrant : -mapQuadrant;
+        float offsetZ = (i & 1) ? mapQuadrant : -mapQuadrant;
 
         float x = offsetX + (float)GetRandomValue(minQuadrant, mapQuadrant - minQuadrant);
         float z = offsetZ + (float)GetRandomValue(minQuadrant, mapQuadrant - minQuadrant);
 
-        objects[i].position = (Vector3){ x, OBJECT_Y, z };
-        objects[i].rotation = 0.0f;
-        objects[i].isVisible = true;
-        objects[i].isFound = false;
-        objects[i].foundTime = 0.0f;
+        objects[i] = (Object){
+            .position = (Vector3){ x, OBJECT_Y, z },
+            .rotation = 0.0f,
+            .isVisible = true,
+            .isFound = false,
+            .foundTime = 0.0f
+        };
     }
 }
 
-void ObjectFound(Object *objects) {
-    if(objects->isFound) {
-        if (objects->foundTime == 0.0f) {
-            objects->foundTime = GetTime();
-        }
+void ObjectFound(Object *obj) {
+    if (!obj->isFound) return;
 
-        float elapsedTime = GetTime() - objects->foundTime;
+    if (obj->foundTime == 0.0f) {
+        obj->foundTime = GetTime();
+    } else {
+        float elapsedTime = GetTime() - obj->foundTime;
         if (elapsedTime > DISAPPEAR_TIME) {
-            objects->isVisible = false;
+            obj->isVisible = false;
         }
     }
 }
@@ -69,21 +65,24 @@ void ObjectFound(Object *objects) {
 // Update hidden objects and check if they are within the distance threshold
 void UpdateObjects(Camera *camera) {
     allObjectsFound = true;
+    float currentTime = GetTime();
 
     for (int i = 0; i < OBJECT_COUNT; i++) {
-        if (objects[i].isVisible) {
-            float distance = Vector3Distance(camera->position, objects[i].position);
+        Object *obj = &objects[i];
+
+        if (obj->isVisible) {
+            float distance = Vector3Distance(camera->position, obj->position);
 
             if (distance < DISTANCE_THRESHOLD) {
-                objects[i].isFound = true;
+                obj->isFound = true;
             }
 
-            if (objects[i].isVisible) {
+            if (obj->isFound) {
+                ObjectFound(obj);
+            }
+
+            if (obj->isVisible) {
                 allObjectsFound = false;
-            }
-
-            if (objects[i].isFound) {
-                ObjectFound(&objects[i]);
             }
         }
     }
@@ -103,4 +102,3 @@ void DrawObjects(Model object, Camera *camera) {
         }
     }
 }
-
