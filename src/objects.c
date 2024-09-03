@@ -65,7 +65,6 @@ void ObjectFound(Object *obj) {
 // Update hidden objects and check if they are within the distance threshold
 void UpdateObjects(Camera *camera) {
     allObjectsFound = true;
-    float currentTime = GetTime();
 
     for (int i = 0; i < OBJECT_COUNT; i++) {
         Object *obj = &objects[i];
