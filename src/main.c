@@ -160,23 +160,25 @@ int main(void)
         UpdateLightShader(camera, light);
 
         // Begin drawing
+        BeginDrawing();
         BeginTextureMode(cTexture);
         ClearBackground(BLACK);
         switch(currentScreen)
         {
-            case LOGO:
-            {
+            case LOGO: {
                 DrawText("LOGO SCREEN", 20, 20, 40, LIGHTGRAY);
                 DrawText("WAIT for 2 SECONDS...", 290, 220, 20, GRAY);
-            } break;
-            case TITLE:
-            {
+            } 
+            break;
+
+            case TITLE: {
                 DrawRectangle(0, 0, screenWidth, screenHeight, GREEN);
                 DrawText("TITLE SCREEN", 20, 20, 40, DARKGREEN);
                 DrawText("PRESS ENTER to GAMEPLAY SCREEN", 120, 220, 20, DARKGREEN);
-            } break;
-            case GAMEPLAY:
-            {
+            } 
+            break;
+
+            case GAMEPLAY: {
                 BeginMode3D(camera);
 
                 BeginShaderMode(light);
@@ -186,11 +188,8 @@ int main(void)
                 rlEnableDepthMask();
 
                 // Random objects
-                bool near = DrawObjects(object, &camera);
-
-                if (near) {
-                    DrawText("Near", 20, 20, 14, WHITE);
-                    puts("Near");
+                if (!allObjectsFound) {
+                    DrawObjects(object, &camera);
                 }
 
                 //Draw Grass
@@ -214,24 +213,34 @@ int main(void)
                     GetCurrentScreen();
                     currentScreen = PAUSE;
                 }
+                
+                // Check if all objects are found
+                // Placeholder for now
+                if (allObjectsFound) {
+                    puts("YOU FOUND ALL OBJECTS!");
+                }
 
-            } break;
-            case PAUSE:
-            {
+            } 
+            break;
+
+            case PAUSE: {
                 DrawPause();
-                if(IsKeyPressed(KEY_L))
+                if(IsKeyPressed(KEY_L)) {
                     currentScreen = GAMEPLAY;
+                }
             }
             break;
+
             default: break;
         }
-            EndTextureMode();
 
-            BeginShaderMode(cinematic);
-            DrawTextureRec(cTexture.texture, (Rectangle){0, 0, cTexture.texture.width, -cTexture.texture.height}, (Vector2){0, 0}, BLANK);
-            EndShaderMode();
+        EndTextureMode();
 
-            DrawSubtitle(firstAudio, true, firstDialogue, sizeof(firstDialogue) / sizeof(firstDialogue[0]));
+        BeginShaderMode(cinematic);
+        DrawTextureRec(cTexture.texture, (Rectangle){0, 0, cTexture.texture.width, -cTexture.texture.height}, (Vector2){0, 0}, BLANK);
+        EndShaderMode();
+
+        DrawSubtitle(firstAudio, true, firstDialogue, sizeof(firstDialogue) / sizeof(firstDialogue[0]));
 
         EndDrawing();
     }
