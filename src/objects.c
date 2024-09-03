@@ -5,12 +5,14 @@
 #define DISTANCE_THRESHOLD 10.0f
 #define OBJECT_COUNT 4
 #define OBJECT_Y 2.0f
+#define DISAPPEAR_TIME 3.0f
 
 typedef struct {
     Vector3 position;
     float rotation;
-    bool visible;
+    bool isVisible;
     bool isFound;
+    float foundTime;
 } Object;
 
 Object objects[OBJECT_COUNT];
@@ -45,21 +47,22 @@ void InitObjects() {
 
         objects[i].position = (Vector3){ x, OBJECT_Y, z };
         objects[i].rotation = 0.0f;
-        objects[i].visible = true;
+        objects[i].isVisible = true;
+        objects[i].isFound = false;
+        objects[i].foundTime = 0.0f;
     }
 }
 
-void AnimateObject(Object *objects) {
-    float time = GetTime();
-    float moveUpHeight = 4.0f;
-    float moveUpSpeed = 0.05f;
-    
-    float height = OBJECT_Y + moveUpHeight;
-    
-    if (objects->position.y < height) {
-        objects->position.y += moveUpSpeed;
-    } else {
-        objects->visible = false;
+void ObjectFound(Object *objects) {
+    if(objects->isFound) {
+        if (objects->foundTime == 0.0f) {
+            objects->foundTime = GetTime();
+        }
+
+        float elapsedTime = GetTime() - objects->foundTime;
+        if (elapsedTime > DISAPPEAR_TIME) {
+            objects->isVisible = false;
+        }
     }
 }
 
@@ -68,22 +71,21 @@ void UpdateObjects(Camera *camera) {
     allObjectsFound = true;
 
     for (int i = 0; i < OBJECT_COUNT; i++) {
-        if (objects[i].visible) {
+        if (objects[i].isVisible) {
             float distance = Vector3Distance(camera->position, objects[i].position);
 
             if (distance < DISTANCE_THRESHOLD) {
                 objects[i].isFound = true;
             }
 
-            if (!objects[i].isFound) {
+            if (objects[i].isVisible) {
                 allObjectsFound = false;
             }
 
             if (objects[i].isFound) {
-                AnimateObject(&objects[i]);
+                ObjectFound(&objects[i]);
             }
         }
-
     }
 }
 
@@ -91,10 +93,10 @@ void DrawObjects(Model object, Camera *camera) {
     UpdateObjects(camera);
 
     for (int i = 0; i < OBJECT_COUNT; i++) {
-        if (objects[i].visible) {
+        if (objects[i].isVisible) {
             DrawModelEx(object,
                         objects[i].position,
-                        Vector3One(),
+                        (Vector3){ 0.0f, 1.0f, 0.0f },
                         objects[i].rotation,
                         Vector3One(),
                         WHITE);
