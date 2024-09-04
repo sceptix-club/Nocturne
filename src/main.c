@@ -127,14 +127,6 @@ int main(void)
 
             case LOBBY:
             {
-                // Set the new camera position for the LOBBY screen
-                camera.position = (Vector3){ 21.2058f, 5.000f, 28.1834f };
-                camera.target = (Vector3){ 20.8649f, 7.4757f, 23.8528f };
-                camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };
-                camera.fovy = 80.0f;
-                camera.projection = CAMERA_PERSPECTIVE;
-
-                UpdateLightShader(camera, light);
                 ButtonClicked choice = CheckClick(GetMousePosition());
                     switch(choice)
                     {
@@ -157,7 +149,6 @@ int main(void)
                         default :
                         break;
                     }
-
             }
             break;
 
@@ -182,32 +173,7 @@ int main(void)
             
             case LOBBY:
             {
-                BeginDrawing();
-                BeginTextureMode(cTexture);
-                ClearBackground(BLACK);
-                BeginMode3D(camera);
-
-                    // Begin shader mode
-                    BeginShaderMode(light);
-                    rlDisableBackfaceCulling();
-                    rlDisableDepthMask();
-                    DrawModel(skybox, (Vector3){0,0,0}, 20.0f, BLACK);
-                    rlEnableDepthMask();
-
-                    DrawGrass(grass, camera.target);
-
-                    rlEnableBackfaceCulling();     
-                    DrawGround(ground, camera.target);
-                    DrawFireflies(firefly, camera.target);
-                EndMode3D();
-                EndTextureMode();
-
-                BeginShaderMode(cinematic);
-                DrawTextureRec(cTexture.texture, (Rectangle){0, 0, cTexture.texture.width, -cTexture.texture.height}, (Vector2){0, 0}, BLANK);
-                EndShaderMode();
-
-                DrawSubtitle(firstAudio, true, firstDialogue, sizeof(firstDialogue) / sizeof(firstDialogue[0]));
-                EndDrawing();
+               DrawUI(true);
             }
             break;
 
