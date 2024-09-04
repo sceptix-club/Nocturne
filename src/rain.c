@@ -2,7 +2,6 @@
 #include "utils/wrapPosition.h"
 
 #define RAINDROP_COUNT 1000
-#define RAINDROP_SCALE (Vector3){1.0f, 1.0f, 1.0f}
 #define MAX_OFFSET 30.0f
 #define START_RAIN_COUNT 0
 
@@ -11,7 +10,6 @@ typedef struct RainDrop {
 } RainDrop;
 
 RainDrop rainDrops[RAINDROP_COUNT];
-
 int activeRain = START_RAIN_COUNT;
 
 Model RainModel(Shader lightShader) {
@@ -22,8 +20,7 @@ Model RainModel(Shader lightShader) {
     return rain;
 }
 
-inline void ResetActiveRainDrops()
-{
+inline void ResetActiveRainDrops() {
     activeRain = START_RAIN_COUNT;
 }
 
@@ -63,7 +60,12 @@ void DrawRain(Model rain, Vector3 cameraPosition) {
     UpdateRain(cameraPosition, activeRain);
 
     for (int i = 0; i < activeRain; i++) {
-        DrawModelEx(rain, rainDrops[i].position, (Vector3){1.0f, 0.0f, 0.0f}, 90.0f, RAINDROP_SCALE, DARKGRAY);
+        DrawModelEx(rain, 
+        rainDrops[i].position, 
+        (Vector3){1.0f, 0.0f, 0.0f}, 
+        90.0f, 
+        Vector3One(), 
+        DARKGRAY);
     }
 
     // Increase rain drops every frame till it reaches RAINDROP_COUNT

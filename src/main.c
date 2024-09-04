@@ -58,6 +58,7 @@ int main(void)
 
     // Get the object model
     Model object = ObjectModel(light);
+    Model marker = MarkerModel();
 
     //  grass model
     Model grass = GrassBladeModel(light);
@@ -225,17 +226,14 @@ int main(void)
                 rlEnableDepthMask();
 
                 // Random objects
-                if (!allObjectsFound) {
-                    DrawObjects(object, &camera);
-                }
+                DrawObjects(object, &camera);
+                DrawMarkers(marker);
 
                 //Draw Grass
                 DrawGrass(grass, camera.target);
 
                 if (toggleRain) {
                     DrawRain(rain, camera.target);
-                } else {
-                    ResetActiveRainDrops();
                 }
 
                 rlEnableBackfaceCulling();     
@@ -279,7 +277,7 @@ int main(void)
         EndTextureMode();
 
         BeginShaderMode(cinematic);
-        DrawTextureRec(cTexture.texture, (Rectangle){0, 0, cTexture.texture.width, -cTexture.texture.height}, (Vector2){0, 0}, BLANK);
+        DrawTextureRec(cTexture.texture,(Rectangle){0, 0, cTexture.texture.width, -cTexture.texture.height}, (Vector2){0, 0}, BLANK);
         EndShaderMode();
 
         DrawSubtitle(firstAudio, true, firstDialogue, sizeof(firstDialogue) / sizeof(firstDialogue[0]));
@@ -292,6 +290,8 @@ int main(void)
     UnloadModel(ground);
     UnloadModel(firefly);
     UnloadModel(rain);
+    UnloadModel(object);
+    UnloadModel(marker);
     UnloadShader(cinematic);
     UnloadShader(skybox.materials[0].shader);
     UnloadTexture(skybox.materials[0].maps[MATERIAL_MAP_CUBEMAP].texture);
