@@ -8,7 +8,7 @@ Model bone;
 
 Model Bone(Shader light)
 {
-    bone = LoadModel("assets/models/bone.obj");
+    bone = LoadModel("assets/models/tree1.obj");
     bone.materials[0].shader = light;
     return bone;
 }
