@@ -56,6 +56,7 @@ int main(void)
 
     // Get the object model
     Model object = ObjectModel(light);
+    Model marker = MarkerModel();
 
     //  grass model
     Model grass = GrassBladeModel(light);
@@ -188,9 +189,8 @@ int main(void)
                 rlEnableDepthMask();
 
                 // Random objects
-                if (!allObjectsFound) {
-                    DrawObjects(object, &camera);
-                }
+                DrawObjects(object, &camera);
+                DrawMarkers(marker);
 
                 //Draw Grass
                 DrawGrass(grass, camera.target);
@@ -250,6 +250,8 @@ int main(void)
     UnloadModel(ground);
     UnloadModel(firefly);
     UnloadModel(rain);
+    UnloadModel(object);
+    UnloadModel(marker);
     UnloadShader(cinematic);
     UnloadShader(skybox.materials[0].shader);
     UnloadTexture(skybox.materials[0].maps[MATERIAL_MAP_CUBEMAP].texture);

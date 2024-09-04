@@ -11,7 +11,9 @@
 extern bool allObjectsFound;
 
 Model ObjectModel(Shader lightShader);
+Model MarkerModel();
 void InitObjects();
 void DrawObjects(Model object, Camera *camera);
+void DrawMarkers(Model marker);
 
 #endif
