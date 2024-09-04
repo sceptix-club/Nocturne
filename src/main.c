@@ -137,8 +137,9 @@ int main(void)
         };
 
         // Toggle rain logic to reset rain drops
-        if (!toggleRain && previousRain) {
+        if (toggleRain && !previousRain) {
             ResetActiveRainDrops();
+            InitRain(camera.target);
         }
         previousRain = toggleRain;
 
@@ -197,8 +198,6 @@ int main(void)
 
                 if (toggleRain) {
                     DrawRain(rain, camera.target);
-                } else {
-                    ResetActiveRainDrops();
                 }
 
                 rlEnableBackfaceCulling();     
