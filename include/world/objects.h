@@ -8,12 +8,20 @@
 #include <raymath.h>
 #include <stdio.h>
 
-extern bool allObjectsFound;
+typedef struct {
+    Model bone;
+    Model ball;
+    Model sign;
+    Model grave;
+} AllObjects;
 
-Model ObjectModel(Shader lightShader);
+extern bool allObjectsFound;
+extern int *seq;
+
+AllObjects ObjectModel(Shader lightShader);
 Model MarkerModel();
 void InitObjects();
-void DrawObjects(Model object, Camera *camera);
+void DrawObjects(AllObjects object, Camera *camera);
 void DrawMarkers(Model marker);
 
 #endif

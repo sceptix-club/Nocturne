@@ -1,4 +1,3 @@
-
 #include <raylib.h>
 #include <rcamera.h>
 #include <stdio.h>
@@ -20,7 +19,6 @@
 #include "world/objects.h"
 #include "world/grass.h"
 #include "world/firefly.h"
-#include "world/props.h"
 #include "world/rain.h"
 #include "utils/pause.h"
 #include "utils/dialogues.h"
@@ -57,7 +55,7 @@ int main(void)
     Model ground = GroundModel(light);
 
     // Get the object model
-    Model object = ObjectModel(light);
+    AllObjects object = ObjectModel(light);
     Model marker = MarkerModel();
 
     //  grass model
@@ -68,8 +66,6 @@ int main(void)
 
     // rain model
     Model rain = RainModel(light);
-
-    Model rubble = Bone(light);
 
     //Initialize grass
     InitGrass(camera.target);
@@ -101,6 +97,13 @@ int main(void)
 
     bool toggleRain = false;
     bool previousRain = false;
+
+
+    printf("Loaded sequence: ");
+    for (unsigned int i = 0; i < 4; i++) {
+        printf("%d ", seq[i]);
+    }
+    printf("\n");
 
     // --------------------------------------------------------------------------------------
 
@@ -230,7 +233,7 @@ int main(void)
                 DrawMarkers(marker);
 
                 //Draw Grass
-                DrawGrass(grass, camera.target);
+                //DrawGrass(grass, camera.target);
 
                 if (toggleRain) {
                     DrawRain(rain, camera.target);
@@ -239,7 +242,6 @@ int main(void)
                 rlEnableBackfaceCulling();     
                 DrawGround(ground, camera.target);
                 DrawFireflies(firefly, camera.target);
-                DrawBone(true,Vector3Zero());
 
                 EndMode3D();
                 
@@ -290,8 +292,14 @@ int main(void)
     UnloadModel(ground);
     UnloadModel(firefly);
     UnloadModel(rain);
-    UnloadModel(object);
+    
+    UnloadModel(object.bone);
+    UnloadModel(object.ball);
+    UnloadModel(object.sign);
+    UnloadModel(object.grave);
     UnloadModel(marker);
+    free(seq);
+    
     UnloadShader(cinematic);
     UnloadShader(skybox.materials[0].shader);
     UnloadTexture(skybox.materials[0].maps[MATERIAL_MAP_CUBEMAP].texture);
