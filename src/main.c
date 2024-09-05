@@ -57,7 +57,7 @@ int main(void)
     Model ground = GroundModel(light);
 
     // Get the object model
-    Model object = ObjectModel(light);
+    AllObjects object = ObjectModel(light);
     Model marker = MarkerModel();
 
     //  grass model
@@ -68,8 +68,6 @@ int main(void)
 
     // rain model
     Model rain = RainModel(light);
-
-    Model rubble = Bone(light);
 
     //Initialize grass
     InitGrass(camera.target);
@@ -239,7 +237,6 @@ int main(void)
                 rlEnableBackfaceCulling();     
                 DrawGround(ground, camera.target);
                 DrawFireflies(firefly, camera.target);
-                DrawBone(true,Vector3Zero());
 
                 EndMode3D();
                 
@@ -290,8 +287,13 @@ int main(void)
     UnloadModel(ground);
     UnloadModel(firefly);
     UnloadModel(rain);
-    UnloadModel(object);
+    
+    UnloadModel(object.bone);
+    UnloadModel(object.ball);
+    UnloadModel(object.sign);
+    UnloadModel(object.grave);
     UnloadModel(marker);
+    
     UnloadShader(cinematic);
     UnloadShader(skybox.materials[0].shader);
     UnloadTexture(skybox.materials[0].maps[MATERIAL_MAP_CUBEMAP].texture);

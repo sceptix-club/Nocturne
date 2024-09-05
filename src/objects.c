@@ -9,7 +9,8 @@
 #define MIN_SPAWN_RADIUS 20
 #define DISTANCE_THRESHOLD 8.0
 #define OBJECT_COUNT 4
-#define OBJECT_Y 2.0f
+#define OBJECT_Y 0.0f
+#define OBJECT_SCALE (Vector3){ 3.0f, 3.0f, 3.0f }
 #define FOUND_TIME 2.0f
 
 // Struct for hidden objects
@@ -27,6 +28,7 @@ typedef struct {
 
 Object objects[OBJECT_COUNT];
 Marker markers[OBJECT_COUNT];
+AllObjects objectModel;
 bool allObjectsFound = false;
 
 static float markerPositionY = 0.0f;
@@ -35,13 +37,31 @@ static float markerRotationY = 0.0f;
 
 
 
-Model ObjectModel(Shader lightShader) {
-    // 3D cube for now
-    Mesh cube = GenMeshCube(2.0f, 2.0f, 2.0f);
-    Model object = LoadModelFromMesh(cube);
-    object.materials[0].shader = lightShader;
+AllObjects ObjectModel(Shader lightShader) {
+    // Bone model
+    Model bone = LoadModel("assets/models/bone.obj");
+    bone.materials[0].shader = lightShader;
 
-    return object;
+    // Ball model
+    Model ball = LoadModel("assets/models/ball.obj");
+    ball.materials[0].shader = lightShader;
+
+    // Sign Board model
+    Model sign = LoadModel("assets/models/ball.obj");
+    sign.materials[0].shader = lightShader;
+
+    // Grave model
+    Model grave = LoadModel("assets/models/grave.obj");
+    grave.materials[0].shader = lightShader;
+
+    objectModel = (AllObjects){
+        .bone = bone,
+        .ball = ball,
+        .sign = sign,
+        .grave = grave
+    };
+
+    return objectModel;
 }
 
 Model MarkerModel() {
@@ -113,17 +133,13 @@ void UpdateObjects(Camera *camera) {
     }
 }
 
-void DrawObjects(Model object, Camera *camera) {
+void DrawObjects(AllObjects object, Camera *camera) {
     UpdateObjects(camera);
 
-    for (int i = 0; i < OBJECT_COUNT; i++) {
-            DrawModelEx(object,
-                        objects[i].position,
-                        (Vector3){ 0.0f, 1.0f, 0.0f },
-                        0.0f,
-                        Vector3One(),
-                        WHITE);
-    }
+    DrawModelEx(object.bone, (Vector3){ objects[0].position.x, OBJECT_Y, objects[0].position.z }, (Vector3){ 0.0f, 1.0f, 0.0f }, 90.0f, OBJECT_SCALE, WHITE);
+    DrawModelEx(object.ball, (Vector3){ objects[1].position.x, OBJECT_Y, objects[1].position.z }, (Vector3){ 0.0f, 1.0f, 0.0f }, 0.0f, OBJECT_SCALE, WHITE);
+    DrawModelEx(object.sign, (Vector3){ objects[2].position.x, OBJECT_Y, objects[2].position.z }, (Vector3){ 0.0f, 1.0f, 0.0f }, 0.0f, OBJECT_SCALE, WHITE);
+    DrawModelEx(object.grave, (Vector3){ objects[3].position.x, OBJECT_Y, objects[3].position.z }, (Vector3){ 0.0f, 1.0f, 0.0f }, 0.0f, OBJECT_SCALE, WHITE);
 }
 
 void DrawMarkers(Model marker) {
