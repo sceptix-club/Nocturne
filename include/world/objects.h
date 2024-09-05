@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <raylib.h>
 #include <raymath.h>
+#include <stdio.h>
 
 typedef struct {
     Model bone;
@@ -15,6 +16,7 @@ typedef struct {
 } AllObjects;
 
 extern bool allObjectsFound;
+extern int *seq;
 
 AllObjects ObjectModel(Shader lightShader);
 Model MarkerModel();

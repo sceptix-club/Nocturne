@@ -98,6 +98,13 @@ int main(void)
     bool toggleRain = false;
     bool previousRain = false;
 
+
+    printf("Loaded sequence: ");
+    for (unsigned int i = 0; i < 4; i++) {
+        printf("%d ", seq[i]);
+    }
+    printf("\n");
+
     // --------------------------------------------------------------------------------------
 
     while (!WindowShouldClose()) // Gameloop
@@ -226,7 +233,7 @@ int main(void)
                 DrawMarkers(marker);
 
                 //Draw Grass
-                DrawGrass(grass, camera.target);
+                //DrawGrass(grass, camera.target);
 
                 if (toggleRain) {
                     DrawRain(rain, camera.target);
@@ -291,6 +298,7 @@ int main(void)
     UnloadModel(object.sign);
     UnloadModel(object.grave);
     UnloadModel(marker);
+    free(seq);
     
     UnloadShader(cinematic);
     UnloadShader(skybox.materials[0].shader);
