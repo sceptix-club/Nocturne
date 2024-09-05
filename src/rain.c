@@ -12,10 +12,10 @@ typedef struct RainDrop {
 RainDrop rainDrops[RAINDROP_COUNT];
 int activeRain = START_RAIN_COUNT;
 
-
-Model RainModel() {
+Model RainModel(Shader lightShader) {
     Mesh plane = GenMeshPlane(0.03f, 0.3f, 1, 1);
     Model rain = LoadModelFromMesh(plane);
+    rain.materials[0].shader = lightShader;
 
     return rain;
 }

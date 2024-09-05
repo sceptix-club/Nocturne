@@ -24,18 +24,20 @@
 #include "world/rain.h"
 #include "utils/pause.h"
 #include "utils/dialogues.h"
+#include "utils/ui.h"
 #include "stdio.h"
 
-typedef enum GameScreen { LOGO = 0, TITLE, GAMEPLAY, PAUSE} GameScreen;
+typedef enum GameScreen { LOGO = 0, TITLE, GAMEPLAY, PAUSE, LOBBY, OPTIONS, EXIT} GameScreen;
 
 int main(void)
 {
-    const int screenWidth = 1600;
-    const int screenHeight = 900;
+    const int screenWidth = GetMonitorWidth(GetCurrentMonitor());
+    const int screenHeight = GetMonitorHeight(GetCurrentMonitor());
     GameScreen currentScreen = LOGO;
 
     SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT | FLAG_MSAA_4X_HINT);
     InitWindow(screenWidth, screenHeight, "ARTEMIS");
+    ToggleFullscreen();
     int framesCounter = 0;
 
     Camera camera = {0};
@@ -65,7 +67,7 @@ int main(void)
     Model firefly = FireflyModel();
 
     // rain model
-    Model rain = RainModel();
+    Model rain = RainModel(light);
 
     Model rubble = Bone(light);
 
@@ -85,6 +87,7 @@ int main(void)
     InitRain(camera.target);
 
     InitAudioDevice();
+    InitUI();
 
     //Empty texture for cinamtic shader
     Shader cinematic = Cinematic();
@@ -92,7 +95,8 @@ int main(void)
     Texture2D pause_screen;
     Image screen;
     Music firstAudio = LoadMusicStream("assets/dialogues/testAudio.mp3");
-    DisableCursor();
+    Music bgm = LoadMusicStream("assets/thelongdark.mp3");
+    // DisableCursor();
     SetTargetFPS(60);
 
     bool toggleRain = false;
@@ -103,12 +107,13 @@ int main(void)
     while (!WindowShouldClose()) // Gameloop
     {
         UpdateMusicStream(firstAudio);
+        UpdateMusicStream(bgm);
         switch(currentScreen)
         {
             case LOGO:
             {
                 framesCounter++;    // Count frames
-                if (framesCounter > 120)
+                if (framesCounter > 40)
                 {
                     currentScreen = TITLE;
                 }
@@ -117,70 +122,101 @@ int main(void)
             {
                 if (IsKeyPressed(KEY_ENTER) || IsGestureDetected(GESTURE_TAP))
                 {
-                    currentScreen = GAMEPLAY;
+                    currentScreen = LOBBY;
                 }
             } break;
+
+            case LOBBY:
+            {
+                ButtonClicked choice = CheckClick(GetMousePosition());
+                    switch(choice)
+                    {
+                        case PLAY_BUTTON:
+                        {
+                            DisableCursor();                        
+                            currentScreen = GAMEPLAY;
+                        }
+                        break;
+                        case OPTIONS_BUTTON:
+                        {
+                            currentScreen = OPTIONS;
+                        }
+                        break;
+                        case EXIT_BUTTON:
+                        {
+                            currentScreen = EXIT;
+                        }
+                        break;
+                        default :
+                        break;
+                    }
+            }
+            break;
+
             case GAMEPLAY:
             {
                 
             } break;
             default: break;
         }
-
-        if (IsKeyPressed(KEY_F))
-        {
-            ToggleFullscreen();
-        }
-
-        if (IsKeyPressed(KEY_R)) {
-            toggleRain = !toggleRain;
-        };
-
-        // Toggle rain logic to reset rain drops
-        if (toggleRain && !previousRain) {
-            ResetActiveRainDrops();
-            InitRain(camera.target);
-        }
-        previousRain = toggleRain;
-
-        UpdateCameraPro(&camera,
-        (Vector3){
-            (IsKeyDown(KEY_W) || IsKeyDown(KEY_UP))*0.1f -      // Move forward-backward
-            (IsKeyDown(KEY_S) || IsKeyDown(KEY_DOWN))*0.1f,    
-            (IsKeyDown(KEY_D) || IsKeyDown(KEY_RIGHT))*0.1f -   // Move right-left
-            (IsKeyDown(KEY_A) || IsKeyDown(KEY_LEFT))*0.1f,
-            0.0f                                                // Move up-down
-        },
-        (Vector3){
-            // Edit delta X for faster sideways movement
-            GetMouseDelta().x*0.1f,                            // Rotation: yaw
-            GetMouseDelta().y*0.08f,                            // Rotation: pitch
-            0.0f                                                // Rotation: roll
-        },
-        0.0f);                         // Move to target (zoom)
-
-        UpdateLightShader(camera, light);
-
         // Begin drawing
-        BeginDrawing();
-        BeginTextureMode(cTexture);
-        ClearBackground(BLACK);
         switch(currentScreen)
         {
             case LOGO: {
-                DrawText("LOGO SCREEN", 20, 20, 40, LIGHTGRAY);
-                DrawText("WAIT for 2 SECONDS...", 290, 220, 20, GRAY);
+                DrawRaylib();
             } 
             break;
 
             case TITLE: {
-                DrawRectangle(0, 0, screenWidth, screenHeight, GREEN);
-                DrawText("TITLE SCREEN", 20, 20, 40, DARKGREEN);
-                DrawText("PRESS ENTER to GAMEPLAY SCREEN", 120, 220, 20, DARKGREEN);
+                DrawLoadingScreen();
             } 
             break;
+            
+            case LOBBY:
+            {
+               DrawUI(true);
+            }
+            break;
+
 
             case GAMEPLAY: {
+                // DisableCursor();
+                if (IsKeyPressed(KEY_F))
+                {
+                    ToggleFullscreen();
+                }
+
+                if (IsKeyPressed(KEY_R)) {
+                    toggleRain = !toggleRain;
+                };
+
+                // Toggle rain logic to reset rain drops
+                if (!toggleRain && previousRain) {
+                    ResetActiveRainDrops();
+                }
+                previousRain = toggleRain;
+
+                UpdateCameraPro(&camera,
+                (Vector3){
+                    (IsKeyDown(KEY_W) || IsKeyDown(KEY_UP))*0.1f -      // Move forward-backward
+                    (IsKeyDown(KEY_S) || IsKeyDown(KEY_DOWN))*0.1f,    
+                    (IsKeyDown(KEY_D) || IsKeyDown(KEY_RIGHT))*0.1f -   // Move right-left
+                    (IsKeyDown(KEY_A) || IsKeyDown(KEY_LEFT))*0.1f,
+                    0.0f                                                // Move up-down
+                },
+                (Vector3){
+                    // Edit delta X for faster sideways movement
+                    GetMouseDelta().x*0.1f,                            // Rotation: yaw
+                    GetMouseDelta().y*0.08f,                            // Rotation: pitch
+                    0.0f                                                // Rotation: roll
+                },
+                0.0f);                         // Move to target (zoom)
+
+                UpdateLightShader(camera, light);
+
+                BeginDrawing();
+                BeginTextureMode(cTexture);
+                ClearBackground(BLACK);
                 BeginMode3D(camera);
 
                 BeginShaderMode(light);
@@ -229,6 +265,11 @@ int main(void)
                 }
             }
             break;
+            case EXIT:
+            {
+                CloseWindow();
+            }
+            break;
 
             default: break;
         }
@@ -236,7 +277,7 @@ int main(void)
         EndTextureMode();
 
         BeginShaderMode(cinematic);
-        DrawTextureRec(cTexture.texture, (Rectangle){0, 0, cTexture.texture.width, -cTexture.texture.height}, (Vector2){0, 0}, BLANK);
+        DrawTextureRec(cTexture.texture,(Rectangle){0, 0, cTexture.texture.width, -cTexture.texture.height}, (Vector2){0, 0}, BLANK);
         EndShaderMode();
 
         DrawSubtitle(firstAudio, true, firstDialogue, sizeof(firstDialogue) / sizeof(firstDialogue[0]));
