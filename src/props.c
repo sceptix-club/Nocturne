@@ -7,7 +7,7 @@ Trees trees[TREES_COUNT];
 
 Model Bone(Shader light)
 {
-    bone = LoadModel("assets/models/bone.obj");
+    bone = LoadModel("assets/models/map.obj");
     bone.materials[0].shader = light;
     return bone;
 }
