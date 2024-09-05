@@ -20,6 +20,7 @@
 #include "world/grass.h"
 #include "world/firefly.h"
 #include "world/rain.h"
+#include "world/props.h"
 #include "utils/pause.h"
 #include "utils/dialogues.h"
 #include "utils/ui.h"
@@ -60,7 +61,7 @@ int main(void)
     Model firefly = FireflyModel();
     // rain model
     Model rain = RainModel(light);
-    Model rubble = Bone(light);
+    // Model rubble = Bone(light);
     Model tree = MakeTree(light);
 
     //Initialize grass
