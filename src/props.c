@@ -5,12 +5,12 @@
 Model bone,tree;
 Trees trees[TREES_COUNT];
 
-Model Bone(Shader light)
-{
-    bone = LoadModel("assets/models/map.obj");
-    bone.materials[0].shader = light;
-    return bone;
-}
+// Model Bone(Shader light)
+// {
+//     bone = LoadModel("assets/models/map.obj");
+//     bone.materials[0].shader = light;
+//     return bone;
+// }
 
 Model MakeTree(Shader light)
 {
@@ -19,25 +19,25 @@ Model MakeTree(Shader light)
     return tree;
 }
 
-void DrawBone(bool draw,Vector3 position)
-{
-    if(draw)
-    {
-        for(int i=0 ;i<GRASSBLADE_COUNT; i++)
-        {
-            if(Vector3Distance(grassBlades[i].position,position) <= THRESHOLD)
-            {   //disable the grass around certain distance around the model
-                grassBlades[i].active = false;
-            }
-            else
-            {
-                grassBlades[i].active = true;
-            }
+// void DrawBone(bool draw,Vector3 position)
+// {
+//     if(draw)
+//     {
+//         for(int i=0 ;i<GRASSBLADE_COUNT; i++)
+//         {
+//             if(Vector3Distance(grassBlades[i].position,position) <= THRESHOLD)
+//             {   //disable the grass around certain distance around the model
+//                 grassBlades[i].active = false;
+//             }
+//             else
+//             {
+//                 grassBlades[i].active = true;
+//             }
 
-        }
-        DrawModel(bone, position, 3.0f, RAYWHITE);
-    }
-}
+//         }
+//         DrawModel(bone, position, 3.0f, RAYWHITE);
+//     }
+// }
 
 void InitTress(Vector3 cameraPos)
 {

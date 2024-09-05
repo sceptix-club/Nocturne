@@ -19,10 +19,8 @@ typedef struct
 
 extern Trees trees[TREES_COUNT];
 
-Model Bone(Shader light);
-Model MakeTree(Shader light);
 
-void DrawBone(bool draw,Vector3 position);
+Model MakeTree(Shader light);
 void InitTress(Vector3 cameraPos);
 void UpdateTrees(bool draw, Vector3 playerPos);
 void DrawTrees(Model tree, Vector3 cameraPos);
