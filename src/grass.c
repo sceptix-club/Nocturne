@@ -44,6 +44,7 @@ void InitGrass(Vector3 cameraPosition) {
             grassBlades[validGrassBlades].animationOffsetCos = cosf(GetRandomValue(0, 30)) * DEG2RAD; // COS(ANIM)
             validGrassBlades++;
         }
+        grassBlades[validGrassBlades].active = true;
     }
 }
 
