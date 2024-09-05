@@ -49,27 +49,21 @@ int main(void)
 
     // Model ground = Ground();
     Model skybox = SkyBox();
-
     // Light above camera
     Shader light = SetLights();
-
     // display cam position
     Model ground = GroundModel(light);
-
     // Get the object model
     Model object = ObjectModel(light);
     Model marker = MarkerModel();
-
     //  grass model
     Model grass = GrassBladeModel(light);
-
     // firefly model
     Model firefly = FireflyModel();
-
     // rain model
     Model rain = RainModel(light);
-
     Model rubble = Bone(light);
+    Model tree = MakeTree(light);
 
     //Initialize grass
     InitGrass(camera.target);
@@ -88,6 +82,7 @@ int main(void)
 
     InitAudioDevice();
     InitUI();
+    InitTress(camera.target);
 
     //Empty texture for cinamtic shader
     Shader cinematic = Cinematic();
@@ -116,11 +111,13 @@ int main(void)
                 if (framesCounter > 40)
                 {
                     currentScreen = TITLE;
+                    framesCounter=0;
                 }
             } break;
             case TITLE:
             {
-                if (IsKeyPressed(KEY_ENTER) || IsGestureDetected(GESTURE_TAP))
+                framesCounter++;
+                if (framesCounter > 60)
                 {
                     currentScreen = LOBBY;
                 }
@@ -231,6 +228,8 @@ int main(void)
 
                 //Draw Grass
                 DrawGrass(grass, camera.target);
+                //Draw Trees
+                DrawTrees(tree,camera.target);
 
                 if (toggleRain) {
                     DrawRain(rain, camera.target);
