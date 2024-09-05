@@ -6,14 +6,20 @@
 #include <stdlib.h>
 #include <raylib.h>
 #include <raymath.h>
-#include <stdio.h>
+
+typedef struct {
+    Model bone;
+    Model ball;
+    Model sign;
+    Model grave;
+} AllObjects;
 
 extern bool allObjectsFound;
 
-Model ObjectModel(Shader lightShader);
+AllObjects ObjectModel(Shader lightShader);
 Model MarkerModel();
 void InitObjects();
-void DrawObjects(Model object, Camera *camera);
+void DrawObjects(AllObjects object, Camera *camera);
 void DrawMarkers(Model marker);
 
 #endif
