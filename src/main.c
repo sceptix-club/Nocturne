@@ -1,4 +1,3 @@
-
 #include <raylib.h>
 #include <rcamera.h>
 #include <stdio.h>
@@ -20,7 +19,6 @@
 #include "world/objects.h"
 #include "world/grass.h"
 #include "world/firefly.h"
-#include "world/props.h"
 #include "world/rain.h"
 #include "utils/pause.h"
 #include "utils/dialogues.h"
