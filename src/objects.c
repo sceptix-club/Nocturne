@@ -1,13 +1,14 @@
 #include "world/objects.h"
+#include "utils/sequence.h"
 
 /*
     * Small map size for now
     * Increase MAP_SIZE for more object spread
     * Keep MIN_SPAWN_RADIUS less than MAP_SIZE
 */
-#define MAP_SIZE 25
-#define MIN_SPAWN_RADIUS 20
-#define DISTANCE_THRESHOLD 8.0
+#define MAP_SIZE 40
+#define MIN_SPAWN_RADIUS 30
+#define DISTANCE_THRESHOLD 6.0
 #define OBJECT_COUNT 4
 #define OBJECT_Y 0.0f
 #define OBJECT_SCALE (Vector3){ 3.0f, 3.0f, 3.0f }
@@ -33,7 +34,7 @@ bool allObjectsFound = false;
 
 static float markerPositionY = 0.0f;
 static float markerRotationY = 0.0f;
-
+int *seq;
 
 
 
@@ -75,6 +76,12 @@ Model MarkerModel() {
 void InitObjects() {
     float mapQuadrant = MAP_SIZE / 2.0f;
     float minQuadrant = MIN_SPAWN_RADIUS / 2.0f;
+
+    seq = GenerateRandomSequence(4, 0, 3);
+    if (!seq) {
+        puts("Error: Sequence generation failed.");
+        return;
+    }
 
     for (int i = 0; i < OBJECT_COUNT; i++) {
         float offsetX = (i & 2) ? mapQuadrant : -mapQuadrant;
@@ -136,10 +143,40 @@ void UpdateObjects(Camera *camera) {
 void DrawObjects(AllObjects object, Camera *camera) {
     UpdateObjects(camera);
 
-    DrawModelEx(object.bone, (Vector3){ objects[0].position.x, OBJECT_Y, objects[0].position.z }, (Vector3){ 0.0f, 1.0f, 0.0f }, 90.0f, OBJECT_SCALE, WHITE);
-    DrawModelEx(object.ball, (Vector3){ objects[1].position.x, OBJECT_Y, objects[1].position.z }, (Vector3){ 0.0f, 1.0f, 0.0f }, 0.0f, OBJECT_SCALE, WHITE);
-    DrawModelEx(object.sign, (Vector3){ objects[2].position.x, OBJECT_Y, objects[2].position.z }, (Vector3){ 0.0f, 1.0f, 0.0f }, 0.0f, OBJECT_SCALE, WHITE);
-    DrawModelEx(object.grave, (Vector3){ objects[3].position.x, OBJECT_Y, objects[3].position.z }, (Vector3){ 0.0f, 1.0f, 0.0f }, 0.0f, OBJECT_SCALE, WHITE);
+    DrawModelEx(
+        object.bone, 
+        (Vector3){ objects[seq[0]].position.x, OBJECT_Y, objects[seq[0]].position.z }, 
+        (Vector3){ 0.0f, 1.0f, 0.0f }, 
+        0.0f, 
+        OBJECT_SCALE, 
+        WHITE
+    );
+
+    DrawModelEx(
+        object.ball, 
+        (Vector3){ objects[seq[1]].position.x, OBJECT_Y, objects[seq[1]].position.z }, 
+        (Vector3){ 0.0f, 1.0f, 0.0f }, 
+        0.0f, OBJECT_SCALE, 
+        WHITE
+    );
+
+    DrawModelEx(
+        object.sign, 
+        (Vector3){ objects[seq[2]].position.x, OBJECT_Y, objects[seq[2]].position.z }, 
+        (Vector3){ 0.0f, 1.0f, 0.0f }, 
+        0.0f, 
+        OBJECT_SCALE, 
+        WHITE
+    );
+
+    DrawModelEx(
+        object.grave, 
+        (Vector3){ objects[seq[3]].position.x, OBJECT_Y, objects[seq[3]].position.z }, 
+        (Vector3){ 0.0f, 1.0f, 0.0f }, 
+        0.0f, 
+        OBJECT_SCALE, 
+        WHITE
+    );
 }
 
 void DrawMarkers(Model marker) {
