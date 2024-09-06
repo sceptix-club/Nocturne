@@ -22,6 +22,7 @@ typedef struct {
 
 Object objects[OBJECT_COUNT];
 Marker markers[OBJECT_COUNT];
+ExcludePos excludePos[OBJECT_COUNT];
 bool allObjectsFound = false;
 
 static float markerPositionY = 0.0f;

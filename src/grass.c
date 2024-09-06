@@ -1,4 +1,5 @@
 #include "world/grass.h"
+#include "world/objects.h"
 
 #define GRASSBLADE_COUNT 8000
 #define PATCH_SIZE 50.0f
@@ -16,6 +17,7 @@ typedef struct {
 
 GrassBlade grass[GRASSBLADE_COUNT];
 float noiseOffset = 0.0f;
+float excludedRadius[OBJECT_COUNT] = { 8.0f, 5.0f, 5.0f, 8.0f };
 
 
 
@@ -29,6 +31,16 @@ static inline float Noise(float x, float y){
 bool NoGrassZone(Vector3 position) {
     float noise = Noise(position.x, position.z);
     return noise > 1.0f;
+}
+
+bool IsObjectZone(float x, float z) {
+    for (int i = 0; i < OBJECT_COUNT; i++) {
+        if (Vector2Distance((Vector2){x, z}, (Vector2){excludePos[i].posX, excludePos[i].posZ}) < excludedRadius[i]) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 // --------------------------------------(Grass Functions)--------------------------------------
@@ -61,8 +73,9 @@ void InitGrass(Vector3 cameraPosition) {
         grass[i].scale = GetRandomValue(5, 14);
         grass[i].rotation = GetRandomValue(0, 90);
         grass[i].animationOffsetSin = sinf(GetRandomValue(0, 30)) * DEG2RAD;
-        grass[i].animationOffsetCos = cosf(GetRandomValue(0, 30)) * DEG2RAD;
-        grass[i].active = !NoGrassZone(position);
+        grass[i].animationOffsetCos = cosf(GetRandomValue(0, 30)) * DEG2RAD;;
+        grass[i].active = !(NoGrassZone(position) || IsObjectZone(position.x, position.z));
+
     }
 }
 
@@ -80,6 +93,8 @@ void UpdateGrass(Vector3 cameraPosition) {
         } else if (grass[i].position.z > cameraPosition.z + PATCH_SIZE / 2) {
             grass[i].position.z -= PATCH_SIZE;
         }
+
+        grass[i].active = !IsObjectZone(grass[i].position.x, grass[i].position.z);
     }
 }
 

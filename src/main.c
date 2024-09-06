@@ -233,7 +233,7 @@ int main(void)
                 DrawMarkers(marker);
 
                 //Draw Grass
-                //DrawGrass(grass, camera.target);
+                DrawGrass(grass, camera.target);
                 //Draw Trees
                 //DrawTrees(tree,camera.target);
 
