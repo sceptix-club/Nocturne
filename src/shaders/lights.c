@@ -19,7 +19,7 @@ Shader SetLights()
     float attenuation = 0.3f;
     int attenuationLoc = GetShaderLocation(lightShader, "attenuationLoc");
 
-    SetShaderValue(lightShader, ambientLoc, (float[4]){ 0.05f, 0.075f, 0.07f, 1.0f }, SHADER_UNIFORM_VEC4);
+    SetShaderValue(lightShader, ambientLoc, (float[4]){ 0.5f, 0.75f, 0.7f, 1.0f }, SHADER_UNIFORM_VEC4);
     SetShaderValue(lightShader, attenuationLoc, &attenuation, SHADER_UNIFORM_FLOAT);
 
     lights[0] = CreateLight(LIGHT_POINT, (Vector3){0.0f,1.5f,0.0f}, Vector3Zero(), WHITE, attenuation, lightShader);
