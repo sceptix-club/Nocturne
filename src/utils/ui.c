@@ -57,13 +57,14 @@ void DrawLoadingScreen()
         float posY = (sH - logo.height) / 2.0f;
         DrawRectangle(0, 0, sW, sH, BLACK);
         DrawTextureEx(logo, (Vector2){ posX, posY }, 0.0f, 1.0f, WHITE);
-        DrawText("PRESS ENTER to GAMEPLAY SCREEN", 120, 220, 20, WHITE);
+        // DrawText("PRESS ENTER to GAMEPLAY SCREEN", 120, 220, 20, WHITE);
     EndDrawing();
 }
 
 ButtonClicked CheckClick(Vector2 mousePos) {
 
-        if (CheckCollisionPointRec(mousePos, playButton)&& IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+        if (CheckCollisionPointRec(mousePos, playButton)) {
+            if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
                 return PLAY_BUTTON;
         }
         if (CheckCollisionPointRec(mousePos, optionsButton)) {
