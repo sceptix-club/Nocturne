@@ -235,7 +235,7 @@ int main(void)
                 //Draw Grass
                 DrawGrass(grass, camera.target);
                 //Draw Trees
-                //DrawTrees(tree,camera.target);
+                DrawTrees(tree,camera.target);
 
                 if (toggleRain) {
                     DrawRain(rain, camera.target);

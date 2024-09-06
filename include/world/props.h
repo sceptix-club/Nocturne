@@ -9,6 +9,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <raymath.h>
+#include "world/objects.h"
 
 typedef struct
 {
