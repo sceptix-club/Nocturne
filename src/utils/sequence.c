@@ -1,6 +1,8 @@
 #include "utils/sequence.h"
 
 int* GenerateRandomSequence(unsigned int count, int min, int max) {
+    srand(time(NULL));
+
     if (max - min + 1 < count) {
         printf("Error: Range is too small for the number of unique values requested.\n");
         return NULL;

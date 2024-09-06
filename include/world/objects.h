@@ -8,6 +8,8 @@
 #include <raymath.h>
 #include <stdio.h>
 
+#define OBJECT_COUNT 4
+
 typedef struct {
     Model bone;
     Model ball;
@@ -15,6 +17,12 @@ typedef struct {
     Model grave;
 } AllObjects;
 
+typedef struct {
+    float posX;
+    float posZ;
+} ExcludePos;
+
+extern ExcludePos excludePos[OBJECT_COUNT];
 extern bool allObjectsFound;
 extern int *seq;
 

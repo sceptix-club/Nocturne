@@ -235,7 +235,7 @@ int main(void)
                 //Draw Grass
                 DrawGrass(grass, camera.target);
                 //Draw Trees
-                DrawTrees(tree,camera.target);
+                //DrawTrees(tree,camera.target);
 
                 if (toggleRain) {
                     DrawRain(rain, camera.target);
@@ -294,11 +294,13 @@ int main(void)
     UnloadModel(ground);
     UnloadModel(firefly);
     UnloadModel(rain);
-    
+    UnloadModel(tree);
+
     UnloadModel(object.bone);
     UnloadModel(object.ball);
     UnloadModel(object.sign);
     UnloadModel(object.grave);
+
     UnloadModel(marker);
     free(seq);
     
