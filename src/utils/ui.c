@@ -38,7 +38,7 @@ void InitUI()
 
 void DrawRaylib()
 {
-    BeginDrawing();
+    // BeginDrawing();
         float posX = (sW - raylib_logo.width) / 2.0f;
         float posY = (sH - raylib_logo.height) / 2.0f;
         DrawRectangle(0, 0, sW, sH, WHITE);
@@ -46,19 +46,19 @@ void DrawRaylib()
         int textWidth = MeasureText("THE SCEPTIX CLUB",20);
         DrawText("THE SCEPTIX CLUB",(sW-textWidth)/2,(sH-60),20,BLACK);
         DrawText("WAIT for a few SECONDS...", 20, sH-60, 20, GRAY);
-    EndDrawing();
+    // EndDrawing();
 
 }
 
 void DrawLoadingScreen()
 {
-    BeginDrawing();
+    // BeginDrawing();
         float posX = (sW - logo.width) / 2.0f;
         float posY = (sH - logo.height) / 2.0f;
         DrawRectangle(0, 0, sW, sH, BLACK);
         DrawTextureEx(logo, (Vector2){ posX, posY }, 0.0f, 1.0f, WHITE);
         // DrawText("PRESS ENTER to GAMEPLAY SCREEN", 120, 220, 20, WHITE);
-    EndDrawing();
+    // EndDrawing();
 }
 
 ButtonClicked CheckClick(Vector2 mousePos) {
