@@ -114,3 +114,10 @@ void DrawUI(bool draw)
   }
    
 }
+
+
+void DrawMovieFrame()
+{
+    DrawRectangle(0,0,sW,FRAME,BLACK);
+    DrawRectangle(0,sH-FRAME,sW,FRAME,BLACK);
+}
