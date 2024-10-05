@@ -24,9 +24,10 @@
 #include "utils/pause.h"
 #include "utils/dialogues.h"
 #include "utils/ui.h"
+#include "utils/cutscene.h"
 #include "stdio.h"
 
-typedef enum GameScreen { LOGO = 0, TITLE, GAMEPLAY, PAUSE, LOBBY, OPTIONS, EXIT} GameScreen;
+typedef enum GameScreen { LOGO = 0, TITLE, GAMEPLAY, PAUSE, LOBBY, OPTIONS, EXIT, CUTSCENE} GameScreen;
 
 int main(void)
 {
@@ -80,7 +81,9 @@ int main(void)
     InitRain(camera.target);
 
     InitAudioDevice();
+    SetAudioStreamBufferSizeDefault(8192);
     InitUI();
+    initCutscene();
     InitTress(camera.target);
 
     //Empty texture for cinamtic shader
@@ -90,10 +93,18 @@ int main(void)
     Image screen;
     Music firstAudio = LoadMusicStream("assets/dialogues/testAudio.mp3");
     Music bgm = LoadMusicStream("assets/thelongdark.mp3");
+    Music cutsceneaudio = LoadMusicStream("assets/cutsceneAudio.mp3");
+
+
+    cutsceneaudio.stream.sampleRate = 44100;
+    bgm.stream.sampleRate = 44100;
+    // SetMusicPitch(bgm,1.0f);
     // DisableCursor();
     SetTargetFPS(60);
 
     bool toggleRain = false;
+    bool toggleBgm = false;
+    bool toggleCutScene = false;
     bool previousRain = false;
 
 
@@ -107,6 +118,7 @@ int main(void)
 
     while (!WindowShouldClose()) // Gameloop
     {
+        UpdateMusicStream(cutsceneaudio);
         UpdateMusicStream(firstAudio);
         UpdateMusicStream(bgm);
         switch(currentScreen)
@@ -129,8 +141,12 @@ int main(void)
                 }
             } break;
 
+
+
+
             case LOBBY:
             {
+                BeginDrawing();
                 ButtonClicked choice = CheckClick(GetMousePosition());
                     switch(choice)
                     {
@@ -155,14 +171,10 @@ int main(void)
                     }
             }
             break;
-
-            case GAMEPLAY:
-            {
-                
-            } break;
-            default: break;
         }
         // Begin drawing
+        BeginDrawing();
+        ClearBackground(BLACK);
         switch(currentScreen)
         {
             case LOGO: {
@@ -181,7 +193,6 @@ int main(void)
             }
             break;
 
-
             case GAMEPLAY: {
                 // DisableCursor();
                 if (IsKeyPressed(KEY_F))
@@ -191,8 +202,23 @@ int main(void)
 
                 if (IsKeyPressed(KEY_R)) {
                     toggleRain = !toggleRain;
-                };
+                }
 
+                if (IsKeyPressed(KEY_C))
+                {
+                    currentScreen = CUTSCENE;
+                    if(!toggleCutScene)
+                        toggleCutScene = !toggleCutScene;
+                }
+
+                if(IsKeyPressed(KEY_M)){
+                    toggleBgm = !toggleBgm;
+                    if(toggleBgm)
+                        PlayMusicStream(bgm);
+                    else
+                        StopMusicStream(bgm);
+
+                }
                 // Toggle rain logic to reset rain drops
                 if (!toggleRain && previousRain) {
                     ResetActiveRainDrops();
@@ -262,6 +288,18 @@ int main(void)
             } 
             break;
 
+            case CUTSCENE:
+            {
+                int end = PlayCutScene(true, cutsceneaudio);
+                if (end)
+                {
+                    StopMusicStream(cutsceneaudio);
+                    currentScreen = GAMEPLAY;
+
+                }
+                
+            } break;
+
             case PAUSE: {
                 DrawPause();
                 if(IsKeyPressed(KEY_L)) {
@@ -269,13 +307,12 @@ int main(void)
                 }
             }
             break;
+
             case EXIT:
             {
                 CloseWindow();
             }
             break;
-
-            default: break;
         }
 
         EndTextureMode();
