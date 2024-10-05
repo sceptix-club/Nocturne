@@ -36,7 +36,7 @@ int main(void)
     GameScreen currentScreen = LOGO;
 
     SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT | FLAG_MSAA_4X_HINT);
-    InitWindow(screenWidth, screenHeight, "ARTEMIS");
+    InitWindow(screenWidth, screenHeight, "Nocturne");
     ToggleFullscreen();
     int framesCounter = 0;
 
@@ -89,6 +89,10 @@ int main(void)
     //Empty texture for cinamtic shader
     Shader cinematic = Cinematic();
     RenderTexture2D cTexture = LoadRenderTexture(GetMonitorWidth(GetCurrentMonitor()), GetMonitorHeight(GetCurrentMonitor())); // Bloom overlay.
+    RenderTexture2D cutscenetexture = LoadRenderTexture(GetMonitorWidth(GetCurrentMonitor()), GetMonitorHeight(GetCurrentMonitor())); // Bloom overlay.
+    RenderTexture2D lobbyTexture = LoadRenderTexture(GetMonitorWidth(GetCurrentMonitor()), GetMonitorHeight(GetCurrentMonitor()));
+    RenderTexture2D gameplayTexture = LoadRenderTexture(GetMonitorWidth(GetCurrentMonitor()), GetMonitorHeight(GetCurrentMonitor()));
+
     Texture2D pause_screen;
     Image screen;
     Music firstAudio = LoadMusicStream("assets/dialogues/testAudio.mp3");
@@ -140,14 +144,11 @@ int main(void)
                     currentScreen = LOBBY;
                 }
             } break;
-
-
-
-
             case LOBBY:
             {
-                BeginDrawing();
-                ButtonClicked choice = CheckClick(GetMousePosition());
+                    BeginTextureMode(lobbyTexture);
+                    ClearBackground(BLACK);
+                    ButtonClicked choice = CheckClick(GetMousePosition());
                     switch(choice)
                     {
                         case PLAY_BUTTON:
@@ -169,32 +170,14 @@ int main(void)
                         default :
                         break;
                     }
+                    DrawUI(true);
+                    EndTextureMode();
             }
             break;
-        }
-        // Begin drawing
-        BeginDrawing();
-        ClearBackground(BLACK);
-        switch(currentScreen)
-        {
-            case LOGO: {
-                DrawRaylib();
-            } 
-            break;
 
-            case TITLE: {
-                DrawLoadingScreen();
-            } 
-            break;
-            
-            case LOBBY:
+            case GAMEPLAY:
             {
-               DrawUI(true);
-            }
-            break;
-
-            case GAMEPLAY: {
-                // DisableCursor();
+                  // DisableCursor();
                 if (IsKeyPressed(KEY_F))
                 {
                     ToggleFullscreen();
@@ -203,21 +186,18 @@ int main(void)
                 if (IsKeyPressed(KEY_R)) {
                     toggleRain = !toggleRain;
                 }
-
                 if (IsKeyPressed(KEY_C))
                 {
                     currentScreen = CUTSCENE;
                     if(!toggleCutScene)
                         toggleCutScene = !toggleCutScene;
                 }
-
                 if(IsKeyPressed(KEY_M)){
                     toggleBgm = !toggleBgm;
                     if(toggleBgm)
                         PlayMusicStream(bgm);
                     else
                         StopMusicStream(bgm);
-
                 }
                 // Toggle rain logic to reset rain drops
                 if (!toggleRain && previousRain) {
@@ -242,54 +222,45 @@ int main(void)
                 0.0f);                         // Move to target (zoom)
 
                 UpdateLightShader(camera, light);
-
-                BeginDrawing();
-                BeginTextureMode(cTexture);
+                BeginTextureMode(gameplayTexture);
                 ClearBackground(BLACK);
                 BeginMode3D(camera);
-
                 BeginShaderMode(light);
                 rlDisableBackfaceCulling();
                 rlDisableDepthMask();
                 DrawModel(skybox, (Vector3){0,0,0}, 20.0f, BLACK);
                 rlEnableDepthMask();
-
                 // Random objects
                 DrawObjects(object, &camera);
                 DrawMarkers(marker);
-
                 //Draw Grass
                 DrawGrass(grass, camera.target);
                 //Draw Trees
                 DrawTrees(tree,camera.target);
-
                 if (toggleRain) {
                     DrawRain(rain, camera.target);
                 }
-
                 rlEnableBackfaceCulling();     
                 DrawGround(ground, camera.target);
                 DrawFireflies(firefly, camera.target);
-
                 EndMode3D();
-                
                 if(IsKeyPressed(KEY_P))
                 {
                     GetCurrentScreen();
                     currentScreen = PAUSE;
                 }
-                
                 // Check if all objects are found
                 // Placeholder for now
                 if (allObjectsFound) {
                     puts("YOU FOUND ALL OBJECTS!");
                 }
-
-            } 
-            break;
+                EndTextureMode();
+            } break;
 
             case CUTSCENE:
             {
+                BeginTextureMode(cutscenetexture);
+                ClearBackground(BLACK);
                 int end = PlayCutScene(true, cutsceneaudio);
                 if (end)
                 {
@@ -297,7 +268,58 @@ int main(void)
                     currentScreen = GAMEPLAY;
 
                 }
-                
+                EndTextureMode();
+            }break;
+        }
+
+
+        // Begin drawing
+        switch(currentScreen)
+        {
+            case LOGO: {
+                BeginDrawing();
+                ClearBackground(BLACK);
+                DrawRaylib();
+                EndDrawing();
+            } 
+            break;
+
+            case TITLE: {
+                BeginDrawing();
+                ClearBackground(BLACK);
+                DrawLoadingScreen();
+                EndDrawing();
+            } 
+            break;
+            
+            case LOBBY:
+            {
+                BeginDrawing();
+                ClearBackground(BLACK);
+                DrawTextureRec(lobbyTexture.texture, (Rectangle){ 0, 0, lobbyTexture.texture.width, -lobbyTexture.texture.height }, (Vector2){ 0, 0 }, WHITE);
+                EndDrawing();
+            }
+            break;
+
+            case GAMEPLAY: {
+                BeginDrawing();
+                ClearBackground(BLACK);
+                BeginShaderMode(cinematic);
+                // DrawTextureRec(cTexture.texture,(Rectangle){0, 0, cTexture.texture.width, -cTexture.texture.height}, (Vector2){0, 0}, WHITE);
+                DrawTextureRec(gameplayTexture.texture, (Rectangle){ 0, 0, gameplayTexture.texture.width, -gameplayTexture.texture.height }, (Vector2){ 0, 0 }, WHITE);
+                EndShaderMode();
+                EndDrawing();
+            } 
+            break;
+
+            case CUTSCENE:
+            {
+                BeginDrawing();
+                ClearBackground(BLACK);
+                BeginShaderMode(cinematic);
+                DrawTextureRec(cutscenetexture.texture, (Rectangle){0,0,cutscenetexture.texture.width, -cutscenetexture.texture.height}, (Vector2){0,0},WHITE);
+                EndShaderMode();
+                EndDrawing();
             } break;
 
             case PAUSE: {
@@ -315,15 +337,8 @@ int main(void)
             break;
         }
 
-        EndTextureMode();
-
-        BeginShaderMode(cinematic);
-        DrawTextureRec(cTexture.texture,(Rectangle){0, 0, cTexture.texture.width, -cTexture.texture.height}, (Vector2){0, 0}, BLANK);
-        EndShaderMode();
-
+        // EndTextureMode();
         DrawSubtitle(firstAudio, true, firstDialogue, sizeof(firstDialogue) / sizeof(firstDialogue[0]));
-
-        EndDrawing();
     }
 
     UnloadShader(light);
@@ -332,7 +347,6 @@ int main(void)
     UnloadModel(firefly);
     UnloadModel(rain);
     UnloadModel(tree);
-
     UnloadModel(object.bone);
     UnloadModel(object.ball);
     UnloadModel(object.sign);
@@ -346,6 +360,10 @@ int main(void)
     UnloadTexture(skybox.materials[0].maps[MATERIAL_MAP_CUBEMAP].texture);
     UnloadModel(skybox);
 
+    UnloadRenderTexture(cutscenetexture);
+    UnloadRenderTexture(lobbyTexture);
+    UnloadRenderTexture(gameplayTexture);
+    
     CloseWindow();
 
     return 0;

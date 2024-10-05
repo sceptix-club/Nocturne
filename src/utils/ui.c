@@ -85,8 +85,6 @@ void DrawUI(bool draw)
 {
   if(draw)
   {
-    BeginDrawing();
-    ClearBackground(BLACK);
     frameCounter++;
     if(frameCounter>=frameDelay)
     {
@@ -113,7 +111,6 @@ void DrawUI(bool draw)
         // DrawRectangleLines(playButton.x, playButton.y, playButton.width, playButton.height, RED);
         // DrawRectangleLines(optionsButton.x, optionsButton.y, optionsButton.width, optionsButton.height, RED);
         // DrawRectangleLines(exitButton.x, exitButton.y, exitButton.width, exitButton.height, RED);  
-    // EndDrawing();
   }
    
 }

@@ -5,7 +5,7 @@
 Image cutsceneBg;
 Texture2D cutsceneBgTex;
 unsigned int cutsceneNextFrameOffset = 0;
-int cutsceneAnimFrames = 0, cutsceneCurrentFrame = 0, cutsceneFrameDelay = 2, cutsceneFrameCounter = 0;
+int cutsceneAnimFrames = 0, cutsceneCurrentFrame = 0, cutsceneFrameDelay =4 , cutsceneFrameCounter = 0;
 int cutsceneTotalFrames = 1590;
 int length;
 
@@ -21,8 +21,6 @@ int PlayCutScene(bool play, Music audio)
 {
     if(play)
     {
-        BeginDrawing();
-        ClearBackground(WHITE);
         if(!IsMusicStreamPlaying(audio))
             PlayMusicStream(audio);
         printf("Cutscene Should be processing rn\n");
@@ -39,7 +37,6 @@ int PlayCutScene(bool play, Music audio)
             cutsceneFrameCounter = 0;
         }
         DrawTextureEx(cutsceneBgTex,(Vector2){0,0},0,2,WHITE);
-        EndDrawing();
     }
     
     if(cutsceneCurrentFrame == cutsceneTotalFrames) return 1;
