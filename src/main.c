@@ -88,13 +88,11 @@ int main(void)
 
     //Empty texture for cinamtic shader
     Shader cinematic = Cinematic();
-    RenderTexture2D cTexture = LoadRenderTexture(GetMonitorWidth(GetCurrentMonitor()), GetMonitorHeight(GetCurrentMonitor())); // Bloom overlay.
-    RenderTexture2D cutscenetexture = LoadRenderTexture(GetMonitorWidth(GetCurrentMonitor()), GetMonitorHeight(GetCurrentMonitor())); // Bloom overlay.
+    // RenderTexture2D cTexture = LoadRenderTexture(GetMonitorWidth(GetCurrentMonitor()), GetMonitorHeight(GetCurrentMonitor())); // Bloom overlay.
+    RenderTexture2D cutscenetexture = LoadRenderTexture(GetMonitorWidth(GetCurrentMonitor()), GetMonitorHeight(GetCurrentMonitor()));
     RenderTexture2D lobbyTexture = LoadRenderTexture(GetMonitorWidth(GetCurrentMonitor()), GetMonitorHeight(GetCurrentMonitor()));
     RenderTexture2D gameplayTexture = LoadRenderTexture(GetMonitorWidth(GetCurrentMonitor()), GetMonitorHeight(GetCurrentMonitor()));
 
-    Texture2D pause_screen;
-    Image screen;
     Music firstAudio = LoadMusicStream("assets/dialogues/testAudio.mp3");
     Music bgm = LoadMusicStream("assets/thelongdark.mp3");
     Music cutsceneaudio = LoadMusicStream("assets/cutsceneAudio.mp3");
@@ -249,11 +247,10 @@ int main(void)
                     GetCurrentScreen();
                     currentScreen = PAUSE;
                 }
-                // Check if all objects are found
-                // Placeholder for now
                 if (allObjectsFound) {
                     puts("YOU FOUND ALL OBJECTS!");
                 }
+                EndShaderMode();
                 EndTextureMode();
             } break;
 
@@ -305,9 +302,10 @@ int main(void)
                 BeginDrawing();
                 ClearBackground(BLACK);
                 BeginShaderMode(cinematic);
-                // DrawTextureRec(cTexture.texture,(Rectangle){0, 0, cTexture.texture.width, -cTexture.texture.height}, (Vector2){0, 0}, WHITE);
                 DrawTextureRec(gameplayTexture.texture, (Rectangle){ 0, 0, gameplayTexture.texture.width, -gameplayTexture.texture.height }, (Vector2){ 0, 0 }, WHITE);
                 EndShaderMode();
+                DrawMovieFrame();
+                DrawSubtitle(firstAudio, true, firstDialogue, sizeof(firstDialogue) / sizeof(firstDialogue[0]));
                 EndDrawing();
             } 
             break;
@@ -316,9 +314,7 @@ int main(void)
             {
                 BeginDrawing();
                 ClearBackground(BLACK);
-                BeginShaderMode(cinematic);
                 DrawTextureRec(cutscenetexture.texture, (Rectangle){0,0,cutscenetexture.texture.width, -cutscenetexture.texture.height}, (Vector2){0,0},WHITE);
-                EndShaderMode();
                 EndDrawing();
             } break;
 
@@ -338,7 +334,6 @@ int main(void)
         }
 
         // EndTextureMode();
-        DrawSubtitle(firstAudio, true, firstDialogue, sizeof(firstDialogue) / sizeof(firstDialogue[0]));
     }
 
     UnloadShader(light);
