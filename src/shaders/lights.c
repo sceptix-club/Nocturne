@@ -43,3 +43,9 @@ Shader Cinematic()
     Shader cinematic = LoadShader(0,TextFormat("resources/shaders/glsl%i/cinematic.fs",GLSL_VERSION));
     return cinematic;
 }
+
+Shader CutSceneShader()
+{
+    Shader cut = LoadShader(0,TextFormat("resources/shaders/glsl%i/cutscene.fs",GLSL_VERSION));
+    return cut;
+}
