@@ -15,7 +15,7 @@ typedef enum {
     EXIT_BUTTON
 } ButtonClicked;
 
-
+extern int sW,sH;
 
 void InitUI();
 void DrawRaylib();
