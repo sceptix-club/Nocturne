@@ -1,7 +1,7 @@
 #include "world/rain.h"
 #include "utils/wrapPosition.h"
 
-#define RAINDROP_COUNT 1000
+#define RAINDROP_COUNT 2000
 #define MAX_OFFSET 30.0f
 #define START_RAIN_COUNT 0
 
