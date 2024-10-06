@@ -97,7 +97,6 @@ int main(void)
     Music bgm = LoadMusicStream("assets/thelongdark.mp3");
     Music cutsceneaudio = LoadMusicStream("assets/cutsceneAudio.mp3");
 
-
     cutsceneaudio.stream.sampleRate = 44100;
     bgm.stream.sampleRate = 44100;
     // SetMusicPitch(bgm,1.0f);
@@ -108,6 +107,8 @@ int main(void)
     bool toggleBgm = false;
     bool toggleCutScene = false;
     bool previousRain = false;
+    bool dialoguePlay = false;
+    extern float playStart;
 
 
     printf("Loaded sequence: ");
@@ -151,7 +152,8 @@ int main(void)
                     {
                         case PLAY_BUTTON:
                         {
-                            DisableCursor();                        
+                            DisableCursor();
+                            playStart = GetTime();
                             currentScreen = GAMEPLAY;
                         }
                         break;
@@ -195,7 +197,7 @@ int main(void)
                     if(toggleBgm)
                         PlayMusicStream(bgm);
                     else
-                        StopMusicStream(bgm);
+                        PauseMusicStream(bgm);
                 }
                 // Toggle rain logic to reset rain drops
                 if (!toggleRain && previousRain) {
@@ -305,7 +307,16 @@ int main(void)
                 DrawTextureRec(gameplayTexture.texture, (Rectangle){ 0, 0, gameplayTexture.texture.width, -gameplayTexture.texture.height }, (Vector2){ 0, 0 }, WHITE);
                 EndShaderMode();
                 DrawMovieFrame();
-                DrawSubtitle(firstAudio, true, firstDialogue, sizeof(firstDialogue) / sizeof(firstDialogue[0]));
+                if((GetTime()- playStart) > 2.0f)
+                {
+                    Dialogue1(true);
+                }
+                if((GetTime() - playStart) > 150.0f)
+                {
+                    Dialogue2(true);
+                }
+
+                
                 EndDrawing();
             } 
             break;
