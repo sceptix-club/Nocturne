@@ -315,6 +315,7 @@ int main(void)
                 {
                     Dialogue2(true);
                 }
+                DrawObjectStatus();
                 
 
                 
@@ -370,7 +371,7 @@ int main(void)
     UnloadRenderTexture(cutscenetexture);
     UnloadRenderTexture(lobbyTexture);
     UnloadRenderTexture(gameplayTexture);
-    
+    UnloadCutscene();
     CloseWindow();
 
     return 0;
