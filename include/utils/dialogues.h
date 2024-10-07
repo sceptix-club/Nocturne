@@ -20,5 +20,6 @@ void DrawSubtitle(Sound audio, bool play, Dialogue *dialogue, int numDialogues, 
 //Dialogue methods
 void Dialogue1(bool play);
 void Dialogue2(bool play);
+void Dialogue3(bool play);
 
 #endif

@@ -4,6 +4,7 @@
 bool isMusicLoaded = false;
 bool Dialogue1played = false;
 bool Dialogue2played = false;
+bool Dialogue3played = false;
 Sound softType;  
 
 //Each Dialogue is to be defined here
@@ -15,15 +16,24 @@ Dialogue firstDialogue[5] = {
     {2.5, "to find your way to be happy."}
 };
 
+//Dialogue 1
 Dialogue opening[3] = {
     {15,"What happened ?"},
     {20,"Where am I ?"},
     {50, "Why can't I remember anything ?"}
 };
 
+//Dialogue 2
 Dialogue findSomething[2] = {
     {3, "I guess..."},
     {10, "I'm supposed to find something ..."}
+};
+
+//Dialogue 3
+Dialogue foundBone[3] = {
+    {6, "A bone?!"},
+    {3,"That's weird"},
+    {5,"Bones in the middle of nowhere..."}
 };
 
 float duration = 0.0f;
@@ -88,6 +98,20 @@ void Dialogue2(bool play)
         if(dialogueIndex >= 2 )
         {
             Dialogue2played = true;
+            duration = 0;
+            dialogueIndex = 0;
+        }
+    }
+}
+
+void Dialogue3(bool play)
+{
+    if(play && !Dialogue3played && Dialogue2played)
+    {
+        DrawSubtitle(softType, true, foundBone, sizeof(foundBone) / sizeof(foundBone[0]),20);
+        if(dialogueIndex >= 2 )
+        {
+            Dialogue3played = true;
             duration = 0;
             dialogueIndex = 0;
         }

@@ -311,10 +311,11 @@ int main(void)
                 {
                     Dialogue1(true);
                 }
-                if((GetTime() - playStart) > 150.0f)
+                if((GetTime() - playStart) > 120.0f)
                 {
                     Dialogue2(true);
                 }
+                
 
                 
                 EndDrawing();
