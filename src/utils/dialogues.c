@@ -1,4 +1,11 @@
 #include "utils/dialogues.h"
+#include "utils/ui.h"
+
+bool isMusicLoaded = false;
+bool Dialogue1played = false;
+bool Dialogue2played = false;
+bool Dialogue3played = false;
+Sound softType;  
 
 //Each Dialogue is to be defined here
 Dialogue firstDialogue[5] = {
@@ -9,32 +16,104 @@ Dialogue firstDialogue[5] = {
     {2.5, "to find your way to be happy."}
 };
 
+//Dialogue 1
+Dialogue opening[3] = {
+    {15,"What happened ?"},
+    {20,"Where am I ?"},
+    {50, "Why can't I remember anything ?"}
+};
+
+//Dialogue 2
+Dialogue findSomething[2] = {
+    {3, "I guess..."},
+    {10, "I'm supposed to find something ..."}
+};
+
+//Dialogue 3
+Dialogue foundBone[3] = {
+    {6, "A bone?!"},
+    {3,"That's weird"},
+    {5,"Bones in the middle of nowhere..."}
+};
+
 float duration = 0.0f;
 int dialogueIndex = 0;
-int screenW,screenH,textWidth,textHeight;
+int textWidth,textHeight;
+int playStart;
+
 
 
 //Same function could be used for drawing different dialogue sets
 //TO-DO : Font syles
-void DrawSubtitle(Music audio, bool play, Dialogue *dialogue, int numDialogues) {
+void DrawSubtitle(Sound audio, bool play, Dialogue *dialogue, int numDialogues, float totalDuration) {
     if (play) {
-        if (IsKeyPressed(KEY_B))
-            PlayMusicStream(audio);
 
-        if (dialogueIndex < numDialogues && IsMusicStreamPlaying(audio)) {
-            duration += GetFrameTime();
+        if (duration == 0.0f) {
+            PlaySound(audio);
+        }
 
-            screenW = GetMonitorWidth(GetCurrentMonitor());
-            screenH = GetMonitorHeight(GetCurrentMonitor());
+        if (duration <= totalDuration) {
+            duration += GetFrameTime();  // Increment the timer
+
             textWidth = MeasureText(dialogue[dialogueIndex].dialogue, 30);
             textHeight = 30;
-
-            DrawText(dialogue[dialogueIndex].dialogue, (screenW-textWidth)/2, (screenH-textHeight-50), 30, WHITE);
+            DrawText(dialogue[dialogueIndex].dialogue, (sW - textWidth) / 2, (sH - textHeight - 120), 30, WHITE);
 
             if (duration >= dialogue[dialogueIndex].duration) {
-                duration = 0.0f;
-                dialogueIndex++;
+                duration = 0.0f;  // Reset the duration timer
+                dialogueIndex++;   // Move to the next dialogue
+                StopSound(audio);
             }
+        }
+    }
+}
+
+
+void Dialogue1(bool play)
+{
+    if(play && !Dialogue1played)
+    {
+        if(!isMusicLoaded)
+        {
+            softType = LoadSound("assets/dialogues/softtype.mp3");
+            isMusicLoaded = true;
+            dialogueIndex = 0;
+        }
+
+        DrawSubtitle(softType, true, opening, sizeof(opening) / sizeof(opening[0]),90);
+        if(dialogueIndex >= 3 )
+        {
+            Dialogue1played = true;
+            duration = 0;
+            dialogueIndex = 0;
+        }
+    }
+}
+
+void Dialogue2(bool play)
+{
+    if(play && !Dialogue2played && Dialogue1played)
+    {
+        DrawSubtitle(softType, true, findSomething, sizeof(findSomething) / sizeof(findSomething[0]),30);
+        if(dialogueIndex >= 2 )
+        {
+            Dialogue2played = true;
+            duration = 0;
+            dialogueIndex = 0;
+        }
+    }
+}
+
+void Dialogue3(bool play)
+{
+    if(play && !Dialogue3played && Dialogue2played)
+    {
+        DrawSubtitle(softType, true, foundBone, sizeof(foundBone) / sizeof(foundBone[0]),20);
+        if(dialogueIndex >= 2 )
+        {
+            Dialogue3played = true;
+            duration = 0;
+            dialogueIndex = 0;
         }
     }
 }

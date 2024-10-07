@@ -38,7 +38,7 @@ void InitUI()
 
 void DrawRaylib()
 {
-    BeginDrawing();
+    // BeginDrawing();
         float posX = (sW - raylib_logo.width) / 2.0f;
         float posY = (sH - raylib_logo.height) / 2.0f;
         DrawRectangle(0, 0, sW, sH, WHITE);
@@ -46,24 +46,25 @@ void DrawRaylib()
         int textWidth = MeasureText("THE SCEPTIX CLUB",20);
         DrawText("THE SCEPTIX CLUB",(sW-textWidth)/2,(sH-60),20,BLACK);
         DrawText("WAIT for a few SECONDS...", 20, sH-60, 20, GRAY);
-    EndDrawing();
+    // EndDrawing();
 
 }
 
 void DrawLoadingScreen()
 {
-    BeginDrawing();
+    // BeginDrawing();
         float posX = (sW - logo.width) / 2.0f;
         float posY = (sH - logo.height) / 2.0f;
         DrawRectangle(0, 0, sW, sH, BLACK);
         DrawTextureEx(logo, (Vector2){ posX, posY }, 0.0f, 1.0f, WHITE);
-        DrawText("PRESS ENTER to GAMEPLAY SCREEN", 120, 220, 20, WHITE);
-    EndDrawing();
+        // DrawText("PRESS ENTER to GAMEPLAY SCREEN", 120, 220, 20, WHITE);
+    // EndDrawing();
 }
 
 ButtonClicked CheckClick(Vector2 mousePos) {
 
-        if (CheckCollisionPointRec(mousePos, playButton)&& IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+        if (CheckCollisionPointRec(mousePos, playButton)) {
+            if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
                 return PLAY_BUTTON;
         }
         if (CheckCollisionPointRec(mousePos, optionsButton)) {
@@ -84,8 +85,6 @@ void DrawUI(bool draw)
 {
   if(draw)
   {
-    BeginDrawing();
-    ClearBackground(BLACK);
     frameCounter++;
     if(frameCounter>=frameDelay)
     {
@@ -112,7 +111,13 @@ void DrawUI(bool draw)
         // DrawRectangleLines(playButton.x, playButton.y, playButton.width, playButton.height, RED);
         // DrawRectangleLines(optionsButton.x, optionsButton.y, optionsButton.width, optionsButton.height, RED);
         // DrawRectangleLines(exitButton.x, exitButton.y, exitButton.width, exitButton.height, RED);  
-    EndDrawing();
   }
    
+}
+
+
+void DrawMovieFrame()
+{
+    DrawRectangle(0,0,sW,FRAME,BLACK);
+    DrawRectangle(0,sH-FRAME,sW,FRAME,BLACK);
 }

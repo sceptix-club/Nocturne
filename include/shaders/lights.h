@@ -6,7 +6,8 @@
 
 Shader SetLights();
 void UpdateLightShader(Camera camera, Shader lightShader);
-Shader Cinematic();     
+Shader Cinematic(void);
+Shader CutSceneShader(void);
 
 
 #endif // LIGHTS_H

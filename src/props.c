@@ -4,13 +4,7 @@
 
 Model bone,tree;
 Trees trees[TREES_COUNT];
-
-// Model Bone(Shader light)
-// {
-//     bone = LoadModel("assets/models/map.obj");
-//     bone.materials[0].shader = light;
-//     return bone;
-// }
+bool skip= false;
 
 Model MakeTree(Shader light)
 {
@@ -19,25 +13,6 @@ Model MakeTree(Shader light)
     return tree;
 }
 
-// void DrawBone(bool draw,Vector3 position)
-// {
-//     if(draw)
-//     {
-//         for(int i=0 ;i<GRASSBLADE_COUNT; i++)
-//         {
-//             if(Vector3Distance(grassBlades[i].position,position) <= THRESHOLD)
-//             {   //disable the grass around certain distance around the model
-//                 grassBlades[i].active = false;
-//             }
-//             else
-//             {
-//                 grassBlades[i].active = true;
-//             }
-
-//         }
-//         DrawModel(bone, position, 3.0f, RAYWHITE);
-//     }
-// }
 
 void InitTress(Vector3 cameraPos)
 {
@@ -50,6 +25,14 @@ void InitTress(Vector3 cameraPos)
         float x = cameraPos.x + distance*cosf(angle);
         float z = cameraPos.z + distance* sinf(angle);
         Vector3 position = {x,0,z};
+
+        for(int i=0;i<OBJECT_COUNT; i++)
+        {
+            if(Vector3Distance((Vector3){excludePos[i].posX,0,excludePos[i].posZ},position)< 10)
+                skip = true;
+        }
+        if(skip) continue;
+
         trees[validTrees].active = true;
         trees[validTrees].rotation = angle;
 

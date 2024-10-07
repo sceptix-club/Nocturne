@@ -14,6 +14,12 @@ extern float duration;
 extern int dialogueIndex;
 
 // Function declaration
-void DrawSubtitle(Music audio, bool play, Dialogue *dialogue, int numDialogues);
+void DrawSubtitle(Sound audio, bool play, Dialogue *dialogue, int numDialogues, float duration);
+
+
+//Dialogue methods
+void Dialogue1(bool play);
+void Dialogue2(bool play);
+void Dialogue3(bool play);
 
 #endif
