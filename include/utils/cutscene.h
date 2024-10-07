@@ -4,6 +4,6 @@
 
 void initCutscene();
 int PlayCutScene(bool play, Music audio);
-
+void UnloadCutscene(void);
 
 #endif
