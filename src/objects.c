@@ -8,19 +8,24 @@
 #define OBJECT_SCALE (Vector3){ 3.0f, 3.0f, 3.0f }
 #define FOUND_TIME 2.0f
 
+//Draw Objects
+//Update Objects
+//Draw marker
+//Find status for each object
+
 typedef struct {
     int id;
     Vector3 position;
     bool isFound;
     bool isNextToFind;
     float foundTime;
-} Object;
+} Objects;
 
 typedef struct {
     bool isVisible;
 } Marker;
 
-Object objects[OBJECT_COUNT];
+Objects object[OBJECT_COUNT];
 Marker markers[OBJECT_COUNT];
 ExcludePos excludePos[OBJECT_COUNT];
 bool allObjectsFound = false;
