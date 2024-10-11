@@ -108,6 +108,7 @@ int main(void)
     bool toggleCutScene = false;
     bool previousRain = false;
     bool dialoguePlay = false;
+    bool cutsceneEnd = false;
     extern float playStart;
 
 
@@ -260,8 +261,8 @@ int main(void)
             {
                 BeginTextureMode(cutscenetexture);
                 ClearBackground(BLACK);
-                int end = PlayCutScene(true, cutsceneaudio);
-                if (end)
+                cutsceneEnd = PlayCutScene(true, cutsceneaudio);
+                if (cutsceneEnd)
                 {
                     StopMusicStream(cutsceneaudio);
                     currentScreen = GAMEPLAY;
@@ -333,7 +334,12 @@ int main(void)
                 {
                     Dialogue6(true);
                 }
-                
+
+                if(DialoguePlayed[5] && !cutsceneEnd)
+                {
+                    currentScreen = CUTSCENE;
+                }
+
                 EndDrawing();
             } 
             break;
