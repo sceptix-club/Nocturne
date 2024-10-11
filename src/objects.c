@@ -24,6 +24,7 @@ Object objects[OBJECT_COUNT];
 Marker markers[OBJECT_COUNT];
 ExcludePos excludePos[OBJECT_COUNT];
 bool allObjectsFound = false;
+bool objectFound[OBJECT_COUNT] = {false,false,false,false};
 
 static float markerPositionY = 0.0f;
 static float markerRotationY = 0.0f;
@@ -108,6 +109,7 @@ void UpdateObjects(Camera *camera) {
 
         if (distance < DISTANCE_THRESHOLD && !obj->isFound && obj->isNextToFind) {
             obj->isFound = true;
+            objectFound[i] = true;
             obj->foundTime = GetTime();
 
             if (i < OBJECT_COUNT - 1) {

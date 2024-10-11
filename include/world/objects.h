@@ -25,11 +25,13 @@ typedef struct {
 extern ExcludePos excludePos[OBJECT_COUNT];
 extern bool allObjectsFound;
 extern int *seq;
+extern bool objectFound[OBJECT_COUNT];
 
 AllObjects ObjectModel(Shader lightShader);
 Model MarkerModel();
 void InitObjects();
 void DrawObjects(AllObjects object, Camera *camera);
 void DrawMarkers(Model marker);
+void DrawObjectStatus(void);
 
 #endif

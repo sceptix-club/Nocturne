@@ -49,3 +49,9 @@ Shader CutSceneShader()
     Shader cut = LoadShader(0,TextFormat("resources/shaders/glsl%i/cutscene.fs",GLSL_VERSION));
     return cut;
 }
+
+Shader GetDreamVision()
+{
+    Shader dream = LoadShader(0,TextFormat("resources/shaders/glsl%i/dream_vision.fs",GLSL_VERSION));
+    return dream;
+}

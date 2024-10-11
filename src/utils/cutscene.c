@@ -67,3 +67,12 @@ int PlayCutScene(bool play, Music audio)
     }
     return 0;  // Still playing cutscene
 }
+
+void UnloadCutscene()
+{
+    for(int i=0; i<CUTSCENE_PARTS; i++)
+    {
+        UnloadImage(cutsceneBg[i]);
+        UnloadTexture(cutsceneBgTex[i]);
+    }
+}
