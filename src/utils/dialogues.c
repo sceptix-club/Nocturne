@@ -2,17 +2,17 @@
 #include "utils/ui.h"
 
 bool isMusicLoaded = false;
-bool DialoguePlayed[10]={false,false,false,false,false,false,false,false};
+bool DialoguePlayed[6]={false,false,false,false,false,false};
 Sound softType;  
 
 //Each Dialogue is to be defined here
-Dialogue firstDialogue[5] = {
-    {3.27, "It takes a long time to realize how truly miserable you are."},
-    {3.11, "And even longer to see that it doesn't have to be that way."},
-    {2.77, "Only after you give up everything,"},
-    {1.25, "can you begin?"},
-    {2.5, "to find your way to be happy."}
-};
+// Dialogue firstDialogue[5] = {
+//     {3.27, "It takes a long time to realize how truly miserable you are."},
+//     {3.11, "And even longer to see that it doesn't have to be that way."},
+//     {2.77, "Only after you give up everything,"},
+//     {1.25, "can you begin?"},
+//     {2.5, "to find your way to be happy."}
+// };
 
 //Dialogue 1
 Dialogue opening[3] = {
@@ -48,6 +48,7 @@ Dialogue foundMap[4] = {
     {8, "This has to lead somewhere"}
 };
 
+//Dialogue 6
 Dialogue foundGrave[3] = {
     {3, "A grave?!"},
     {3, "OK THIS IS GETTING WEIRD"},
@@ -127,7 +128,7 @@ void Dialogue3(bool play)
     if(play && !DialoguePlayed[2] && DialoguePlayed[1])
     {
         DrawSubtitle(softType, true, foundBone, sizeof(foundBone) / sizeof(foundBone[0]),20);
-        if(dialogueIndex >= 2 )
+        if(dialogueIndex >= 3 )
         {
             DialoguePlayed[2] = true;
             duration = 0;
@@ -155,7 +156,7 @@ void Dialogue5(bool play)
     if(play && !DialoguePlayed[4] && DialoguePlayed[3])
     {
         DrawSubtitle(softType, true, foundMap, sizeof(foundMap) / sizeof(foundMap[0]), 20);
-        if(dialogueIndex >= 2 )
+        if(dialogueIndex >= 4 )
         {
             DialoguePlayed[4] = true;
             duration = 0;
@@ -169,7 +170,7 @@ void Dialogue6(bool play)
     if(play && !DialoguePlayed[5] && DialoguePlayed[4])
     {
         DrawSubtitle(softType, true, foundGrave, sizeof(foundGrave) / sizeof(foundGrave[0]), 20);
-        if(dialogueIndex >= 2 )
+        if(dialogueIndex >= 3 )
         {
             DialoguePlayed[5] = true;
             duration = 0;

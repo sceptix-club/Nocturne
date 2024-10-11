@@ -12,6 +12,7 @@ typedef struct {
 extern Dialogue firstDialogue[5];
 extern float duration;
 extern int dialogueIndex;
+extern bool DialoguePlayed[6];
 
 // Function declaration
 void DrawSubtitle(Sound audio, bool play, Dialogue *dialogue, int numDialogues, float duration);
