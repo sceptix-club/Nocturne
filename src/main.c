@@ -315,9 +315,24 @@ int main(void)
                 {
                     Dialogue2(true);
                 }
-                DrawObjectStatus();
-                
 
+//Dialogues for when bones are found
+                if(objectFound[0] && !objectFound[1] && !objectFound[2] && !objectFound[3])
+                {
+                    Dialogue3(true);
+                }
+                if(objectFound[0] && objectFound[1] && !objectFound[2] && !objectFound[3])
+                {
+                    Dialogue4(true);
+                }
+                if(objectFound[0] && objectFound[1] && objectFound[2] && !objectFound[3])
+                {
+                    Dialogue5(true);
+                }
+                if(objectFound[0] && objectFound[1] && objectFound[2] && objectFound[3])
+                {
+                    Dialogue6(true);
+                }
                 
                 EndDrawing();
             } 
