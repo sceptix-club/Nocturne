@@ -86,9 +86,11 @@ int main(void)
     initCutscene();
     InitTress(camera.target);
 
-    //Empty texture for cinamtic shader
     Shader cinematic = Cinematic();
-    // RenderTexture2D cTexture = LoadRenderTexture(GetMonitorWidth(GetCurrentMonitor()), GetMonitorHeight(GetCurrentMonitor())); // Bloom overlay.
+    Shader dreamVision = GetDreamVision();
+
+
+    //Empty texture for cinamtic shader
     RenderTexture2D cutscenetexture = LoadRenderTexture(GetMonitorWidth(GetCurrentMonitor()), GetMonitorHeight(GetCurrentMonitor()));
     RenderTexture2D lobbyTexture = LoadRenderTexture(GetMonitorWidth(GetCurrentMonitor()), GetMonitorHeight(GetCurrentMonitor()));
     RenderTexture2D gameplayTexture = LoadRenderTexture(GetMonitorWidth(GetCurrentMonitor()), GetMonitorHeight(GetCurrentMonitor()));
@@ -109,6 +111,8 @@ int main(void)
     bool previousRain = false;
     bool dialoguePlay = false;
     bool cutsceneEnd = false;
+    bool ShaderSwitchTime = 0.0f;
+    bool useCinamticShader = true;
     extern float playStart;
 
 
@@ -269,6 +273,12 @@ int main(void)
 
                 }
                 EndTextureMode();
+                playStart = 0.0f;
+                if(cutsceneEnd)
+                {
+                    for(int i=0 ;i<OBJECT_COUNT; i++)
+                        objectFound[i] = false;
+                }
             }break;
         }
 
@@ -304,7 +314,24 @@ int main(void)
             case GAMEPLAY: {
                 BeginDrawing();
                 ClearBackground(BLACK);
-                BeginShaderMode(cinematic);
+
+                ShaderSwitchTime += GetFrameTime();
+                if(ShaderSwitchTime >=0.5f){
+                    useCinamticShader = !useCinamticShader;
+                    ShaderSwitchTime = 0.0f;
+                }
+                if(objectFound[3] && (GetFrameTime() + playStart) > 4.0f)
+                {
+                    if(useCinamticShader)
+                        BeginShaderMode(cinematic);
+                    else
+                        BeginShaderMode(dreamVision);
+                }
+                else
+                {
+                    BeginShaderMode(cinematic);
+                }
+                
                 DrawTextureRec(gameplayTexture.texture, (Rectangle){ 0, 0, gameplayTexture.texture.width, -gameplayTexture.texture.height }, (Vector2){ 0, 0 }, WHITE);
                 EndShaderMode();
                 DrawMovieFrame();
@@ -316,11 +343,11 @@ int main(void)
                 {
                     Dialogue2(true);
                 }
-
 //Dialogues for when bones are found
                 if(objectFound[0] && !objectFound[1] && !objectFound[2] && !objectFound[3])
                 {
                     Dialogue3(true);
+                    playStart = 0.0f;
                 }
                 if(objectFound[0] && objectFound[1] && !objectFound[2] && !objectFound[3])
                 {
@@ -333,6 +360,7 @@ int main(void)
                 if(objectFound[0] && objectFound[1] && objectFound[2] && objectFound[3])
                 {
                     Dialogue6(true);
+                    playStart += GetFrameTime();
                 }
 
                 if(DialoguePlayed[5] && !cutsceneEnd)
@@ -385,6 +413,7 @@ int main(void)
     free(seq);
     
     UnloadShader(cinematic);
+    UnloadShader(dreamVision);
     UnloadShader(skybox.materials[0].shader);
     UnloadTexture(skybox.materials[0].maps[MATERIAL_MAP_CUBEMAP].texture);
     UnloadModel(skybox);
