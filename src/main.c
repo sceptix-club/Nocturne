@@ -204,6 +204,11 @@ int main(void)
                     else
                         PauseMusicStream(bgm);
                 }
+                if(IsKeyPressed(KEY_P))
+                {
+                    GetCurrentScreen();
+                    currentScreen = PAUSE;
+                }
                 // Toggle rain logic to reset rain drops
                 if (!toggleRain && previousRain) {
                     ResetActiveRainDrops();
@@ -249,11 +254,6 @@ int main(void)
                 DrawGround(ground, camera.target);
                 DrawFireflies(firefly, camera.target);
                 EndMode3D();
-                if(IsKeyPressed(KEY_P))
-                {
-                    GetCurrentScreen();
-                    currentScreen = PAUSE;
-                }
                 if (allObjectsFound) {
                     puts("YOU FOUND ALL OBJECTS!");
                 }
@@ -278,6 +278,15 @@ int main(void)
                 {
                     for(int i=0 ;i<OBJECT_COUNT; i++)
                         objectFound[i] = false;
+                }
+            }break;
+            case PAUSE:
+            {
+                BeginTextureMode(lobbyTexture);
+                DrawPause();
+                EndTextureMode();
+                if(IsKeyPressed(KEY_L)) {
+                    currentScreen = GAMEPLAY;
                 }
             }break;
         }
@@ -381,10 +390,10 @@ int main(void)
             } break;
 
             case PAUSE: {
-                DrawPause();
-                if(IsKeyPressed(KEY_L)) {
-                    currentScreen = GAMEPLAY;
-                }
+                BeginDrawing();
+                ClearBackground(BLACK);
+                DrawTextureRec(lobbyTexture.texture, (Rectangle){ 0, 0, lobbyTexture.texture.width, -lobbyTexture.texture.height }, (Vector2){ 0, 0 }, WHITE);
+                EndDrawing();
             }
             break;
 
